@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_reservation" model="ir.ui.view">
+        <field name="name">asset.reserve</field>
+        <field name="model">tanmia.assets.reservation</field>
+        <field name="priority" eval="2"/>
+        <field name="arch" type="xml">
+            <calendar  string="Reservations" date_start="start" date_stop="stop" date_delay="duration" all_day="allday"
+                event_open_popup= "true"
+                event_limit="5" quick_add="false">
+                <field name="description" />
+                <!-- For recurrence update Dialog -->
+                <field name="recurrency" invisible="1"/>
+                <field name="recurrence_update" invisible="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_reservation_form" model="ir.ui.view">
+        <field name="name">tanmia.assets.reservation.form</field>
+        <field name="model">tanmia.assets.reservation</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <form string="Reservation">
+                <div attrs="{'invisible': [('recurrence_id','=',False)]}" class="alert alert-info oe_edit_only" role="status">
+                    <p>Edit recurring reservation</p>
+                    <field name="recurrence_update" widget="radio"/>
+                </div>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
+
+                    <div class="oe_title mb-3">
+                        <div>
+                            <label for="name"/>
+                        </div>
+                        <h1>
+                            <field name="name" placeholder="e.g. Business Lunch"/>
+                        </h1>
+                        <group>
+                            <field name="reserve_owner"/>
+                            <field name="asset"/>
+                        </group>
+                    </div>
+                    <notebook>
+                        <page name="page_details" string="Reservation Details">
+                            <group>
+                                <group>
+
+                                    <field name="start_date" string="Starting at" attrs="{'required': [('allday','=',True)], 'invisible': [('allday','=',False)]}" force_save="1"/>
+                                    <field name="stop_date" string="Ending at" attrs="{'required': [('allday','=',True)],'invisible': [('allday','=',False)]}" force_save="1"/>
+
+                                    <field name="start" string="Starting at" attrs="{'required': [('allday','=',False)], 'invisible': [('allday','=',True)]}"/>
+                                    <field name="stop" string="Ending At" attrs="{'invisible': [('allday','=',True)]}"/>
+                                    <label for="duration" attrs="{'invisible': [('allday','=',True)]}"/>
+                                    <div attrs="{'invisible': [('allday','=',True)]}">
+                                        <field name="duration" widget="float_time" string="Duration" class="oe_inline" attrs="{'readonly': [('id', '!=', False), ('recurrency','=',True)]}"/>
+                                        <span> hours</span>
+                                    </div>
+                                     <field name="event_tz" attrs="{'invisible': [('recurrency', '=', False)]}"/>
+                                    <field name="allday" force_save="1"/>
+                                    <field name="user_id" widget="many2one_avatar_user"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="description"/>
+                            </group>
+                        </page>
+                        <page name="page_options" string="Options">
+                            <group>
+                                <div>
+                                    <group>
+                                        <field name="recurrency"/>
+                                    </group>
+                                    <div attrs="{'invisible': [('recurrency', '=', False)]}">
+                                        <group>
+                                            <label for="interval"/>
+                                            <div class="o_col">
+                                                <div class="o_row">
+                                                    <field name="interval" attrs="{'required': [('recurrency', '=', True)]}"/>
+                                                    <field name="rrule_type" attrs="{'required': [('recurrency', '=', True)]}"/>
+                                                </div>
+                                                <widget name="week_days" attrs="{'invisible': [('rrule_type', '!=', 'weekly')]}"/>
+                                            </div>
+                                            <label string="Until" for="end_type"/>
+                                            <div class="o_row">
+                                                <field name="end_type" attrs="{'required': [('recurrency', '=', True)]}"/>
+                                                <field name="count" attrs="{'invisible': [('end_type', '!=', 'count')], 'required': [('recurrency', '=', True)]}"/>
+                                                <field name="until" attrs="{'invisible': [('end_type', '!=', 'end_date')], 'required': [('end_type', '=', 'end_date'), ('recurrency', '=', True)]}"/>
+                                            </div>
+                                        </group>
+                                        <group attrs="{'invisible': [('rrule_type', '!=', 'monthly')]}">
+                                            <label string="Day of Month" for="month_by"/>
+                                            <div class="o_row">
+                                                <field name="month_by"/>
+                                                <field name="day"
+                                                    attrs="{'required': [('month_by', '=', 'date'), ('rrule_type', '=', 'monthly')],
+                                                            'invisible': [('month_by', '!=', 'date')]}"/>
+                                                <field name="byday" string="The"
+                                                    attrs="{'required': [('recurrency', '=', True), ('month_by', '=', 'day'), ('rrule_type', '=', 'monthly')],
+                                                            'invisible': [('month_by', '!=', 'day')]}"/>
+                                                <field name="weekday" nolabel="1"
+                                                    attrs="{'required': [('recurrency', '=', True), ('month_by', '=', 'day'), ('rrule_type', '=', 'monthly')],
+                                                            'invisible': [('month_by', '!=', 'day')]}"/>
+                                            </div>
+                                        </group>
+                                    </div>
+                                </div>
+                                <group>
+                                    <field name="recurrence_id" invisible="1" />
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids" />
+                </div>
+            </form>
+        </field>
+    </record>
+
+
+
+        <!-- show assets view action-->
+    <record model="ir.actions.act_window" id="action_reserves_show">
+        <field name="name">Asset Reservations</field>
+        <field name="res_model">tanmia.assets.reservation</field>
+        <field name="view_mode">calendar,tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            No meetings found. Let's schedule one!
+          </p><p>
+            The calendar is shared between employees and fully integrated with
+            other applications such as the employee leaves or the business
+            opportunities.
+          </p>
+        </field>
+    </record>
+</odoo>

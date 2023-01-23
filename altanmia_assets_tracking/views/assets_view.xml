@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="assets_asset_panel" model="ir.ui.view">
+        <field name="name">asset.panel</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_search"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//field[@name='name']" position="after">
+                <searchpanel>
+                    <field name="category" string="Categories" enable_counters="1"/>
+<!--                    <field name="location"  enable_counters="1"/>-->
+                </searchpanel>
+            </xpath>
+<!--            <xpath expr="//field[@name='name']" position="after">-->
+<!--                <group expand="0" string="Group By">-->
+<!--                    <filter name="cust_group_by" string="Custodian" context="{'group_by': 'custodian'}"/>-->
+<!--                </group>-->
+<!--            </xpath>-->
+        </field>
+    </record>
+
+    <record id="stock_move_line_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.line.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_uom_id']" position="after">
+                <field name="picking_partner_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="assets_asset_tree" model="ir.ui.view">
+        <field name="name">asset.tree</field>
+        <field name="model">account.asset</field>
+        <field name="field_parent">parts</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_purchase_tree"/>
+        <field name="arch" type="xml">
+            <tree position="replace">
+                <tree string="Assets" decoration-info="(state == 'draft')"
+                      decoration-muted="(state == 'close')"
+                      decoration-warning="(state == 'close' and value_residual != 0)" sample="1">
+                    <field name="sequence" widget="handle"/>
+                    <field name="ref"/>
+                    <field name="name"/>
+                    <field name="parent" invisible="1"/>
+                    <field name="current_custodian"/>
+                    <field name="category" optional="show"/>
+                    <field name="acquisition_date"/>
+                    <field name="original_value"/>
+                    <field name="method"/>
+                    <field name="first_depreciation_date"/>
+                    <field name="book_value" optional="hide"/>
+                    <field name="value_residual" widget="monetary" optional="hide"/>
+                    <field name="tags" widget="many2many_tags" options="{'color_field':'color'}" optional="show"/>
+                    <field name="account_asset_id" optional="hide"/>
+                    <field name="account_depreciation_id" optional="hide"/>
+                    <field name="account_depreciation_expense_id" optional="hide"/>
+                    <field name="currency_id" groups="base.group_multi_currency" optional="hide"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="state"/>
+                    <field name="activity_exception_decoration" widget="activity_exception"/>
+                </tree>
+            </tree>
+        </field>
+    </record>
+
+    <record id="assets_asset_form" model="ir.ui.view">
+        <field name="name">asset.form</field>
+        <field name="model">account.asset</field>
+        <field name="inherit_id" ref="account_asset.view_account_asset_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//button[@name='open_increase']" position="after">
+                <button name="open_asset_reservations"
+                        type="object"
+                        class="oe_stat_button"
+                        string="Reservations"
+                        icon="fa-history">
+                </button>
+                <button type="object"
+                        name="action_view_stock_move_lines"
+                        attrs="{'invisible':[('category', '!=', 'product')]}"
+                        class="oe_stat_button" icon="fa-exchange"
+                        groups="stock.group_stock_user">
+                    <div class="o_field_widget o_stat_info mr4">
+                        <span class="o_stat_text">Tracking</span>
+                        <span class="o_stat_text">History</span>
+                    </div>
+                </button>
+            </xpath>
+
+            <xpath expr="/form/header" position="replace">
+                <header>
+                    <button name="validate" states="draft" string="Confirm" type="object" class="oe_highlight"/>
+                    <button type="object" name="compute_depreciation_board" string="Compute Depreciation"
+                            states="draft"/>
+                    <button name="action_set_to_close" string="Sell or Dispose" type="object" class="oe_highlight"
+                            attrs="{'invisible': ['|', ('state', 'not in', ('open','inuse')), ('asset_type', '!=', 'purchase')]}"/>
+                    <button name="set_to_draft" string="Set to Draft" type="object"
+                            attrs="{'invisible': ['|', ('depreciation_entries_count', '!=', 0), ('state', 'not in', ('open','inuse'))]}"/>
+                    <button name="set_to_running" string="Set to Running" type="object"
+                            attrs="{'invisible': [('state', '!=', 'close')]}"/>
+                    <button name="action_asset_pause" string="Pause Depreciation" type="object"
+                            attrs="{'invisible': ['|', ('state', 'not in', ('open','inuse')), ('asset_type', '!=', 'purchase')]}"/>
+                    <button name="resume_after_pause" string="Resume Depreciation" type="object"
+                            attrs="{'invisible': [('state', '!=', 'paused')]}"/>
+                    <button name="action_asset_modify" states="open,inuse" string="Modify Depreciation" type="object"/>
+                    <button name="action_save_model" states="open,inuse,paused,close" string="Save Model"
+                            type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open"
+                           attrs="{'invisible': [('state', '=', 'model')]}"/>
+                </header>
+            </xpath>
+
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="ref" attrs="{'readonly': 1}" style="float: right;"/>
+            </xpath>
+            <xpath expr="//field[@name='method']" position="after">
+                <field name="depreciation_level"/>
+            </xpath>
+            <xpath expr="/form/sheet/group[1]/group" position="after">
+                <group string="Description">
+                    <field name="capacity"/>
+                    <field name="location"/>
+                    <field name="current_custodian"/>
+                </group>
+
+                <group string="Reference">
+                    <label for="category"/>
+                    <div>
+                        <field name="category" class="oe_inline" style="padding: 1px 15px;"/>
+                        <field name="product_id" attrs="{'invisible': [('category', '!=', 'product')]}"
+                               class="oe_inline" style="padding-inline-start: 20px;"/>
+
+                        <field name="person_id" attrs="{'invisible': [('category', '!=', 'person')]}"
+                               class="oe_inline" style="padding-inline-start: 20px;"/>
+                        <field name="material_id" attrs="{'invisible': [('category', '!=', 'material')]}"
+                               class="oe_inline" style="padding-inline-start: 20px;"/>
+                        <field name="vehicle_model" attrs="{'invisible': [('category', '!=', 'car')]}"
+                               class="oe_inline" style="padding-inline-start: 20px;"/>
+                        <field name="equipment_id" attrs="{'invisible': [('category', '!=', 'equipment')]}"
+                               class="oe_inline" style="padding-inline-start: 20px;"/>
+                    </div>
+                    <field name="product_lots_serial" domain="[('product_id', '=', product_id)]" attrs="{'invisible': [('category', '!=', 'product')]}"/>
+                    <field name="alternative_product_id" attrs="{'invisible': [('category', '!=', 'product')]}"
+                           domain="[('id', '!=', product_id)]"/>
+                    <field name="alternative_vehicle_id" attrs="{'invisible': [('category', '!=', 'car')]}"
+                           domain="[('id', '!=', vehicle_model)]"/>
+                    <field name="alternative_person_id" attrs="{'invisible': [('category', '!=', 'person')]}"
+                           domain="[('id', '!=', person_id)]"/>
+                    <field name="alternative_material_id" attrs="{'invisible': [('category', '!=', 'material')]}"
+                           domain="[('id', '!=', material_id)]"/>
+                    <field name="alternative_equipment_id" attrs="{'invisible': [('category', '!=', 'equipment')]}"
+                           domain="[('id', '!=', equipment_id)]"/>
+                </group>
+
+                <group string="Depended">
+                    <label for="depended"/>
+                    <div>
+                        <field name="depended" class="oe_inline" style="padding: 1px 15px;"/>
+                        <field name="depended_product_id" attrs="{'invisible': [('depended', '!=', 'product')]}"
+                               domain="[('id', '!=', product_id)]" class="oe_inline"
+                               style="padding-inline-start: 20px;"/>
+                        <field name="depended_vehicle_id" attrs="{'invisible': [('depended', '!=', 'car')]}"
+                               domain="[('id', '!=', vehicle_model)]" class="oe_inline"
+                               style="padding-inline-start: 20px;"/>
+                        <field name="depended_person_id" attrs="{'invisible': [('depended', '!=', 'person')]}"
+                               domain="[('id', '!=', person_id)]" class="oe_inline"
+                               style="padding-inline-start: 20px;"/>
+                        <field name="depended_material_id" attrs="{'invisible': [('depended', '!=', 'material')]}"
+                               domain="[('id', '!=', material_id)]" class="oe_inline"
+                               style="padding-inline-start: 20px;"/>
+                        <field name="depended_equipment_id" attrs="{'invisible': [('depended', '!=', 'equipment')]}"
+                               domain="[('id', '!=', equipment_id)]" class="oe_inline"
+                               style="padding-inline-start: 20px;"/>
+                    </div>
+                </group>
+                <group>
+                    <field name="tags" widget="many2many_tags" options="{'color_field':'color'}"/>
+                </group>
+            </xpath>
+            <xpath expr="/form/sheet/notebook" position="attributes">
+                <attribute name="attrs">{}</attribute>
+            </xpath>
+            <xpath expr="/form/sheet/notebook/page" position="after">
+
+                <page string="Composition">
+                    <group>
+                        <field name="parent"/>
+                    </group>
+                    <group string="Parts">
+                        <field name="parts" widget="many2many" nolabel="1">
+                            <tree>
+                                <field name="ref" optional="show"/>
+                                <field name="name" string="Part Name" optional="show"/>
+                                <field name="location" optional="show"/>
+                                <field name="state" optional="show"/>
+                            </tree>
+                        </field>
+                    </group>
+
+                </page>
+                <page string="Custodians Log">
+                    <field name="custodians">
+                        <tree delete="false">
+                            <field name="responsible_person" optional="show" attrs="{'readonly': 1}"/>
+                            <field name="start_responsibility" optional="show" attrs="{'readonly': 1}"/>
+                            <field name="end_responsibility" optional="show" attrs="{'readonly': 1}"/>
+                            <field name="notice" optional="show" attrs="{'readonly': 1}"/>
+                        </tree>
+                    </field>
+                </page>
+
+                <page string="Parts Depreciation Board" name="part_depreciation_board"
+                      attrs="{'invisible' : [('state', '!=', 'inuse')]}">
+                    <field name="depreciation_parts_move_ids"  mode="tree" options="{'reload_whole_on_button': true}">
+                        <tree string="Depreciation Lines" decoration-info="state == 'draft'" create="0"
+                              default_order="ref" >
+                            <field name="currency_id" invisible="1"/>
+                            <field name="ref" invisible=""/>
+                            <field name="reversal_move_id" widget="deprec_lines_reversed"/>
+                            <field name="date" string="Depreciation Date"/>
+                            <field name="amount_total" widget="monetary" string="Depreciation"
+                                   options="{'currency_field': 'currency_id'}"
+                                   attrs="{'readonly': [('state', '=', 'posted')]}"/>
+                            <field name="asset_depreciated_value" readonly="1" force_save="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="asset_remaining_value" readonly="1" widget="monetary" force_save="1"
+                                   options="{'currency_field': 'currency_id'}"/>
+                            <field name="name" readonly="1" string="Journal Entry"/>
+                            <field name="state" invisible="1"/>
+                            <field name="asset_manually_modified" invisible="1"/>
+                        </tree>
+                    </field>
+                </page>
+                <page string="Notice">
+                    <field name="notice" placeholder="Enter / for formatting" options="{'resizable':true}"/>
+                </page>
+
+            </xpath>
+
+            <xpath expr="//field[@name='first_depreciation_date']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='prorata']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//label[@for='prorata']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='method_period']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='method_number']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//label[@for='method_number']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='method']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='book_value']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='value_residual']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='salvage_value']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='original_value']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='already_depreciated_amount_import']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="attrs">{'required':
+                    [('depreciation_level','=','asset_level')],'invisible':[('depreciation_level','!=','asset_level')]}
+                </attribute>
+                <attribute name="required">False</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='account_depreciation_expense_id']" position="attributes">
+                <attribute name="attrs">{'required':
+                    [('depreciation_level','=','asset_level')],'invisible':[['depreciation_level','!=','asset_level']]}
+                </attribute>
+                <attribute name="required">False</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='account_depreciation_id']" position="attributes">
+                <attribute name="attrs">{'required':
+                    [('depreciation_level','=','asset_level')],'invisible':[['depreciation_level','!=','asset_level']]}
+                </attribute>
+                <attribute name="required">False</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='account_asset_id']" position="attributes">
+                <attribute name="attrs">{'required': [('depreciation_level','=','asset_level')],
+                    'invisible':[['depreciation_level','!=','asset_level']]}
+                </attribute>
+                <attribute name="required">False</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='first_depreciation_date_import']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='depreciation_number_import']" position="attributes">
+                <attribute name="attrs">{'invisible':[['depreciation_level','!=','asset_level']]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="assets_asset_custodian_form" model="ir.ui.view">
+        <field name="name">asset.custodian.form</field>
+        <field name="model">tanmia.assets.custodian</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="start_responsibility" invisible="1"/>
+                        <field name="end_responsibility" invisible="1"/>
+                        <field name="responsible_person"/>
+                    </group>
+                    <group>
+                        <field name="notice"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="asset_move_location_action" model="ir.actions.act_window">
+        <field name="name">Asset Location History</field>
+        <field name="res_model">stock.move.line</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="view_mode">tree,kanban,pivot,form</field>
+        <field name="view_id" ref="stock.view_move_line_tree"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">
+                There's no location move yet
+            </p>
+            <p>
+                This menu gives you the full traceability of inventory operations on a specific asset.
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access.tanmia.assets.material,access_tanmia_assets_material,altanmia_assets_tracking.model_tanmia_assets_material,base.group_user,1,1,1,1
+access.tanmia.assets.assets_tag,access_tanmia_assets_assets_tag,altanmia_assets_tracking.model_tanmia_assets_assets_tag,base.group_user,1,1,1,1
+access.tanmia.assets.reservation,access_tanmia_assets_reservation,altanmia_assets_tracking.model_tanmia_assets_reservation,base.group_user,1,1,1,1
+access.tanmia.assets.recurrence,access_tanmia_assets_recurrence,altanmia_assets_tracking.model_tanmia_assets_recurrence,base.group_user,1,1,1,1
+access.tanmia.assets.custodian,access_tanmia_assets_custodian,altanmia_assets_tracking.model_tanmia_assets_custodian,base.group_user,1,1,1,1
+access.tanmia.assets.location.history,access_tanmia_assets_location_history,altanmia_assets_tracking.model_tanmia_assets_location_history,base.group_user,1,1,1,1
