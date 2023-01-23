@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<odoo>
+        <!-- Top menu item -->
+        <menuitem id="booking_menu_root"
+            name="Resources Booking"
+            web_icon="altanmia_resource_booking,static/description/icon.png"
+            sequence="0"/>
+
+        <!--Show Resources list menu item-->
+        <menuitem id="booking_resources_show"
+                  name="Booking"
+                  action="tanmia_booking_book_profile_action"
+                  parent="booking_menu_root"
+                  sequence="1"/>
+
+        <menuitem id="booking_resources"
+                  name="Resources"
+                  parent="booking_menu_root"
+                  sequence="2"/>
+
+        <menuitem id="booking_employee_show"
+                  name="Employees"
+                  action="hr.open_view_employee_list_my"
+                  parent="booking_resources"
+                  sequence="1"/>
+
+        <menuitem id="booking_places_show"
+                  name="Places"
+                  action="action_account_asset_show_tree"
+                  parent="booking_resources"
+                  sequence="2"/>
+
+        <menuitem id="booking_orders_show"
+                  name="Booking Orders"
+                  action="action_booking_orders_show"
+                  parent="booking_menu_root"
+                  sequence="2"/>
+
+</odoo>

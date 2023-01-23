@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+	<t t-name="altanmia_resource_booking.booking_submit">
+			<div class="row justify-content-center align-items-center mx-auto my-auto">
+				<div class="o_appointments_submit">
+					<a role="button" t-attf-href="/booking/#{slugified_name}-#{booking_profile_id}/info?dates=#{booking_dates}" class="btn btn-primary m-2">
+						Submit Your Booking
+						<span class="fa fa-arrow-right"/>
+					</a>
+				</div>
+			</div>
+	</t>
+</templates>

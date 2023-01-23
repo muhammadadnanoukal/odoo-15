@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+        <t t-name="altanmia_resource_booking.slots_list">
+            <h5 class="text-center" t-out="slotDate"/>
+            <div class="o_slots_list row">
+                <t t-foreach="slots" t-as="slot">
+                <div class="col-md-6 col-12 mt-2 px-1">
+                    <a class="btn btn-block btn-outline-primary text-black col-12 o_time"
+                        t-out="slot['hours']"/>
+                </div>
+                </t>
+            </div>
+        </t>
+</templates>

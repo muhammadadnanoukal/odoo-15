@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates xml:space="preserve">
+	<t t-name="altanmia_resource_booking.repeat_every">
+        <div style="width: 100%;" class="appointments_recurrence_form">
+        <div class="repeat_every">
+            <div style="width: 100%;" class="d-flex justify-content-around">
+                <label class="text-nowrap align-self-center col-3"><strong>Repeat Every</strong></label>
+                <input class="m-2 form-control input_repeat_every" type="number" min="1" max="10" value="1"/>
+                <select class="m-2 form-control repeat_unit" name="Repeat Unit">
+                  <option value="Weeks" selected="selected">Weeks</option>
+                  <option value="Months">Months</option>
+                </select>
+            </div>
+        </div>
+        </div>
+	</t>
+
+    <t t-name="altanmia_resource_booking.repeat_type">
+        <div class="repeat_type">
+            <div style="width: 100%;" class="d-flex justify-content-around">
+                <label class="text-nowrap align-self-center col-3"><strong>Until</strong></label>
+                <select class="m-2 form-control repeat_until" name="Repeat Until">
+                  <option value="Number of Repetition" selected="selected">Number of Repetition</option>
+                  <option value="End Date">End Date</option>
+                </select>
+            </div>
+        </div>
+    </t>
+    <t t-name="altanmia_resource_booking.input_number">
+        <input class="m-2 form-control input_number" type="number" min="1" max="10" required="True"/>
+    </t>
+    <t t-name="altanmia_resource_booking.input_date">
+        <input class="m-2 form-control input_date" required="True"/>
+    </t>
+    <t t-name="altanmia_resource_booking.repeat_on">
+        <div class="repeat_on">
+            <div style="width: 100%;" class="d-flex justify-content-around">
+                <label class="text-nowrap align-self-center col-3"><strong>Repeat On</strong></label>
+                <select class="m-2 form-control available_days" name="available_days">
+                    <t t-foreach="days" t-as="day">
+                        <option t-att-value="day"><t t-out="day"/></option>
+                    </t>
+                </select>
+            </div>
+        </div>
+	</t>
+    <t t-name="altanmia_resource_booking.month_days_order">
+        <select class="m-2 form-control month_days_order" name="Month Days Order">
+            <option value="first" selected="selected">First</option>
+            <option value="second">Second</option>
+            <option value="third">Third</option>
+            <option value="last">Last</option>
+        </select>
+	</t>
+    <t t-name="altanmia_resource_booking.available_hours">
+        <select class="m-2 form-control available_hours" name="Available Hours">
+            <t t-foreach="hours" t-as="hour">
+                <option t-att-value="hour['hours']"><t t-out="hour['hours']"/></option>
+            </t>
+        </select>
+	</t>
+    <t t-name="altanmia_resource_booking.done">
+        <div class="done">
+            <div style="" class="d-flex justify-content-center">
+                <div class="col-3"></div>
+                <button class="m-2 btn btn-primary pre_submit">Done</button>
+            </div>
+        </div>
+    </t>
+</templates>

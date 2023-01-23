@@ -1,0 +1,593 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="wizard_checkout" name="Wizard Checkout">
+     <t t-set="website_booking_order" t-value="website.booking_get_order()"/>
+
+        <div class="row">
+            <div class="col-xl">
+                <div class="wizard">
+                    <div class="progress-wizard">
+                        <a class="no-decoration" t-att-href="step&gt;=10 and '/booking/cart' or '#'">
+                            <div id="wizard-step10"
+                                 t-att-class="'progress-wizard-step %s' % (step == 10 and 'active' or step&gt;10 and 'complete' or 'disabled')">
+                                <div class="progress-wizard-bar d-none d-md-block"/>
+                                <span class="progress-wizard-dot d-none d-md-inline-block"></span>
+                                <div class="text-center progress-wizard-steplabel">Time</div>
+                            </div>
+                        </a>
+                        <a class="no-decoration" t-att-href="step&gt;=20 and '/booking/checkout' or '#'">
+                            <div id="wizard-step20"
+                                 t-att-class="'progress-wizard-step %s' % (step == 20 and 'active' or step&gt;20 and 'complete' or 'disabled')">
+                                <div class="progress-wizard-bar d-none d-md-block"/>
+                                <span class="progress-wizard-dot d-none d-md-inline-block"></span>
+                                <div class="text-center progress-wizard-steplabel">Address</div>
+                            </div>
+                        </a>
+                        <a class="no-decoration" t-att-href="step&gt;=40 and '/booking/payment' or '#'">
+                            <div id="wizard-step40"
+                                 t-att-class="'progress-wizard-step %s' % (step == 40 and 'active' or step&gt;40 and 'complete' or 'disabled')">
+                                <div class="progress-wizard-bar d-none d-md-block"/>
+                                <span class="progress-wizard-dot d-none d-md-inline-block"></span>
+                                <div class="text-center progress-wizard-steplabel">Checkout</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="payment" name="Payment">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Booking - Select Payment Acquirer</t>
+            <t t-set="no_footer" t-value="1"/>
+
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class='col-12'>
+                            <t t-call="altanmia_resource_booking.wizard_checkout">
+                                <t t-set="step" t-value="40" />
+                            </t>
+                        </div>
+                        <div class="col-12" t-if="errors">
+                            <t t-foreach="errors" t-as="error">
+                                <div class="alert alert-danger" t-if="error" role="alert">
+                                    <h4>
+                                        <t t-esc="error[0]" />
+                                    </h4>
+                                    <t t-esc="error[1]" />
+                                </div>
+                            </t>
+                        </div>
+                        <div class="col-12 col-xl-auto order-xl-2">
+                            <t t-call="altanmia_resource_booking.booking_summary"/>
+                        </div>
+                        <div class="col-12 col-xl order-xl-1 oe_cart">
+                            <div id='address_on_payment'>
+                                <t t-call="altanmia_resource_booking.address_on_payment"/>
+                            </div>
+
+                            <div class="oe_structure clearfix mt-3" id="oe_structure_website_sale_payment_1"/>
+
+                            <t t-if="website_booking_order.amount_total">
+                                <div t-if="acquirers or tokens" id="payment_method" class="mt-3">
+                                    <h3 class="mb24">Pay with </h3>
+                                    <t t-call="payment.checkout">
+                                        <t t-set="footer_template_id" t-value="'altanmia_resource_booking.payment_footer'"/>
+                                        <t t-set="submit_button_label">Pay Now</t>
+                                    </t>
+                                </div>
+                                <div t-else="" class="alert alert-warning">
+                                    <strong>No suitable payment option could be found.</strong><br/>
+                                    If you believe that it is an error, please contact the website administrator.
+                                </div>
+                            </t>
+
+                            <div t-if="not acquirers" class="mt-2">
+                                <a role="button" class="btn-link"
+                                    groups="base.group_system"
+                                    t-attf-href="/web#action=#{payment_action_id}">
+                                        <i class="fa fa-arrow-right"></i> Add payment acquirers
+                                </a>
+                            </div>
+                            <div class="js_payment mt-3" t-if="not website_booking_order.amount_total" id="payment_method" name="o_website_sale_free_cart">
+                                <form target="_self" action="/booking/payment/validate" method="post">
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                                    <t t-call="altanmia_resource_booking.payment_footer">
+                                        <t t-set="submit_button_label">Confirm Order</t>
+                                    </t>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure" id="oe_structure_website_sale_payment_2"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="payment_footer" name="Payment">
+        <div name="o_checkbox_container"
+             class="custom-control custom-checkbox mt-2 o_accept_tc_button"/>
+        <div class="float-left mt-2">
+            <a role="button" href="/booking/#{website_booking_order.id}" class="btn btn-secondary">
+                <i class="fa fa-chevron-left"/> Return to Cart
+            </a>
+        </div>
+        <div class="float-right mt-2">
+            <button name="o_payment_submit_button"
+                    type="submit"
+                    class="btn btn-primary"
+                    disabled="true"
+                    data-icon-class="fa-chevron-right">
+                <t t-esc="submit_button_label"/> <i class="fa fa-chevron-right"/>
+            </button>
+        </div>
+    </template>
+
+    <template id="address_on_payment" name="Address on payment">
+        <div class="card">
+            <div class="card-body" id="shipping_and_billing">
+                <a class="float-right no-decoration" href="/booking/checkout"><i class="fa fa-edit"/> Edit</a>
+                <t t-set="same_shipping" t-value="bool(order.partner_shipping_id==order.partner_id or only_services)" />
+                <div>
+                    <b>Billing: </b>
+                    <span t-esc="order.partner_id" t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/>
+                </div>
+                <div t-if="not same_shipping and not only_services" groups="sale.group_delivery_invoice_address">
+                    <b>Shipping: </b>
+                    <span t-esc="order.partner_shipping_id" t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="confirmation">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Booking - Confirmed</t>
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <h1><span>Order</span> <em t-field="order.name" /> <t t-if="order.state == 'sale'"><span>Confirmed</span></t></h1>
+
+                    <div class="row">
+                        <div class="col-12 col-xl">
+                            <div class="oe_cart">
+                                <t t-set="payment_tx_id" t-value="order.get_portal_last_book_transaction()"/>
+                                <t t-if="payment_tx_id.state == 'done'">
+                                    <div class="thanks_msg">
+                                        <h2>Thank you for your order.
+                                            <a role="button" class="btn btn-primary d-none d-md-inline-block"
+                                               href="/booking/print" target="_blank" aria-label="Print" title="Print">
+                                                <i class="fa fa-print"></i> Print
+                                            </a>
+                                        </h2>
+                                    </div>
+                                </t>
+                                <t t-if="request.env['res.users']._get_signup_invitation_scope() == 'b2c' and request.website.is_public_user()">
+                                    <p class="alert alert-info mt-3" role="status">
+                                        <a role="button" t-att-href='order.partner_id.signup_prepare() and order.partner_id.with_context(relative_url=True).signup_url' class='btn btn-primary'>Sign Up</a>
+                                         to follow your order.
+                                    </p>
+                                </t>
+                                <div class="oe_structure clearfix mt-3" id="oe_structure_website_sale_confirmation_1"/>
+                                <h3 class="text-left mt-3">
+                                    <strong>Payment Information:</strong>
+                                </h3>
+                                <table class="table">
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="2">
+                                                <t t-esc="order.get_portal_last_book_transaction().acquirer_id.sudo().name" />
+                                            </td>
+                                            <td class="text-right" width="100">
+                                                <strong>Total:</strong>
+                                            </td>
+                                            <td class="text-right" width="100">
+                                                <strong t-field="order.amount_total" t-options="{'widget': 'monetary', 'display_currency': order.pricelist_id.currency_id}" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <t t-call="altanmia_resource_booking.payment_confirmation_status"/>
+                                <div class="card mt-3">
+                                  <div class="card-body">
+                                    <t t-set="same_shipping" t-value="bool(order.partner_shipping_id==order.partner_id or only_services)" />
+                                    <div><b>Billing: </b><span t-esc='order.partner_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')" class="address-inline"/></div>
+                                    <div t-if="not same_shipping and not only_services" groups="sale.group_delivery_invoice_address"><b>Shipping: </b><span t-esc='order.partner_shipping_id' t-options="dict(widget='contact', fields=['address'], no_marker=True, separator=', ')"  class="address-inline"/></div>
+                                  </div>
+                                </div>
+                                <div class="oe_structure mt-3" id="oe_structure_website_sale_confirmation_2"/>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-auto">
+                            <t t-set="website_sale_order" t-value="order"/>
+                            <t t-call="altanmia_resource_booking.booking_summary">
+                                <t t-set="hide_promotions" t-value="1"/>
+                                <t t-set="website_booking_order" t-value="order"/>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+                <div class="oe_structure" id="oe_structure_website_sale_confirmation_3"/>
+            </div>
+        </t>
+    </template>
+
+    <template id="payment_confirmation_status">
+        <div class="oe_website_sale_tx_status mt-3" t-att-data-order-id="order.id" t-att-data-order-tracking-info="json.dumps(order_tracking_info)">
+            <t t-set="payment_tx_id" t-value="order.get_portal_last_book_transaction()"/>
+            <div t-attf-class="card #{
+                (payment_tx_id.state == 'pending' and 'bg-info') or
+                (payment_tx_id.state == 'done' and 'alert-success') or
+                (payment_tx_id.state == 'authorized' and 'alert-success') or
+                'bg-danger'}">
+                <div class="card-header">
+                    <a role="button" groups="base.group_system" class="btn btn-sm btn-link text-white float-right" target="_blank" aria-label="Edit" title="Edit"
+                            t-att-href="'/web#model=%s&amp;id=%s&amp;action=%s&amp;view_type=form' % ('payment.acquirer', payment_tx_id.acquirer_id.id, 'payment.action_payment_acquirer')">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                    <t t-if="payment_tx_id.state == 'pending'">
+                        <t t-out="payment_tx_id.acquirer_id.sudo().pending_msg"/>
+                    </t>
+                    <t t-if="payment_tx_id.state == 'done'">
+                        <span t-if='payment_tx_id.acquirer_id.sudo().done_msg' t-out="payment_tx_id.acquirer_id.sudo().done_msg"/>
+                    </t>
+                    <t t-if="payment_tx_id.state == 'cancel'">
+                        <t t-out="payment_tx_id.acquirer_id.sudo().cancel_msg"/>
+                    </t>
+                    <t t-if="payment_tx_id.state == 'authorized'">
+                        <span>Your payment has been authorized.</span>
+                    </t>
+                    <t t-if="payment_tx_id.state == 'error'">
+                        <span t-esc="payment_tx_id.state_message"/>
+                    </t>
+                </div>
+                <t t-if="payment_tx_id.provider == 'transfer'">
+                    <div t-if="order.reference" class="card-body">
+                        <b>Communication: </b><span t-esc='order.reference'/>
+                    </div>
+                    <div t-if="payment_tx_id.acquirer_id.sudo().qr_code">
+                        <t t-set="qr_code" t-value="payment_tx_id.acquirer_id.sudo().journal_id.bank_account_id.build_qr_code_base64(order.amount_total,payment_tx_id.reference, None, payment_tx_id.currency_id, payment_tx_id.partner_id)"/>
+                        <div class="card-body" t-if="qr_code">
+                            <h3>Or scan me with your banking app.</h3>
+                            <img class="border border-dark rounded" t-att-src="qr_code"/>
+                        </div>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+
+    <template id="payment_footer" name="Payment">
+        <div name="o_checkbox_container"
+             class="custom-control custom-checkbox mt-2 o_accept_tc_button"/>
+        <div class="float-left mt-2">
+            <a role="button" t-attf-href="/booking/#{book_profile_id}/profile"
+                                   class="btn btn-secondary mb32 d-none d-xl-inline-block">
+                                    <span class="fa fa-chevron-left"/>
+                                    <span class="">Modify Dates</span>
+            </a>
+        </div>
+        <div class="float-right mt-2">
+            <button name="o_payment_submit_button"
+                    type="submit"
+                    class="btn btn-primary"
+                    disabled="true"
+                    data-icon-class="fa-chevron-right">
+                <t t-esc="submit_button_label"/> <i class="fa fa-chevron-right"/>
+            </button>
+        </div>
+    </template>
+
+    <template id="booking_summary" name="Booking Summary">
+        <table class="mb16 table table-striped table-sm js_cart_lines">
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Duration</th>
+                <th>Resource</th>
+            </tr>
+            <t t-foreach="website_booking_order.order_line" t-as="line">
+                 <t t-foreach="line.booking_events" t-as="date">
+                     <tr>
+                    <td>
+                        <span t-field="date.start" t-options='{"format": "yyyy-MM-d"}'/>
+
+                    </td>
+                    <td>
+                        <span t-field="date.start" t-options='{"format": "hh:mm"}'/>
+
+                    </td>
+                    <td>
+                        <span t-out="date.duration" t-options="{'widget': 'float_time'}"/>
+                            hour<t t-if="date.duration>=2">s</t>
+                    </td>
+                    <td>
+                        <t t-if="date.book_profile_id.resource_type == 'person' ">
+                            <span t-field="date.user_id"/>
+                        </t>
+                        <t t-if="date.book_profile_id.resource_type == 'place' ">
+                            <span t-field="date.place_id"/>
+                        </t>
+                    </td>
+
+                </tr>
+                 </t>
+
+            </t>
+        </table>
+            <t t-call="altanmia_resource_booking.total">
+                <t t-set='redirect' t-value="redirect or '/booking/payment'"></t>
+            </t>
+    </template>
+
+    <template id="total">
+        <div id="cart_total" t-att-class="extra_class or ''" t-if="website_booking_order and website_booking_order.website_order_line">
+            <table class="table">
+                  <tr id="empty">
+                      <t t-if='not no_rowspan'><td rowspan="10" class="border-0"/></t>
+                      <td class="col-md-2 col-3 border-0"></td>
+                      <td class="col-md-2 col-3 border-0" ></td>
+                  </tr>
+                  <tr id="order_total_untaxed">
+                      <td class="text-right border-0">Subtotal:</td>
+                      <td class="text-xl-right border-0" >
+                          <span t-field="website_booking_order.amount_untaxed" class="monetary_field" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_booking_order.currency_id}"/>
+                      </td>
+                  </tr>
+                  <tr id="order_total_taxes">
+                      <td class="text-right border-0">Taxes:</td>
+                      <td class="text-xl-right border-0">
+                           <span t-field="website_booking_order.amount_tax" class="monetary_field" style="white-space: nowrap;" t-options="{'widget': 'monetary', 'display_currency': website_booking_order.currency_id}" />
+                      </td>
+                  </tr>
+                  <tr id="order_total">
+                      <td class="text-right"><strong>Total:</strong></td>
+                      <td class="text-xl-right">
+                          <strong t-field="website_booking_order.amount_total" class="monetary_field"
+                              t-options='{"widget": "monetary", "display_currency": website_booking_order.pricelist_id.currency_id}'/>
+                      </td>
+                  </tr>
+            </table>
+        </div>
+    </template>
+
+    <template id="address_kanban" name="Kanban address">
+            <form action="/booking/checkout" method="POST" class="d-none">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                <input type="hidden" name="partner_id" t-att-value="contact.id" />
+                <t t-if='edit_billing'>
+                    <input type="hidden" name="callback" value="/booking/checkout?use_billing" />
+                </t>
+                <input type='submit'/>
+            </form>
+            <div t-attf-class="card #{selected and 'border border-primary' or 'js_change_shipping'}">
+                <div class='card-body' style='min-height: 130px;'>
+                    <a t-if="allow_edit" href="#" class="btn btn-link float-right p-0 js_edit_address no-decoration"
+                       role="button" title="Edit this address" aria-label="Edit this address">
+                        <i class='fa fa-edit'/>
+                    </a>
+                    <t t-esc="contact" t-options="dict(widget='contact', fields=['name', 'address'], no_marker=True)"/>
+                </div>
+                <div class='card-footer' t-if='not readonly'>
+                    <span class='btn-ship' t-att-style="'' if selected else 'display:none;'">
+                        <a role="button" href='#' class="btn btn-block btn-primary">
+                            <i class='fa fa-check'></i> Ship to this address
+                        </a>
+                    </span>
+                    <span class='btn-ship' t-att-style="'' if not selected else 'display:none;'">
+                        <a role="button" href='#' class="btn btn-block btn-secondary">
+                            Select this address
+                        </a>
+                    </span>
+                </div>
+            </div>
+    </template>
+
+    <template id="checkout">
+        <t t-call="website.layout">
+            <t t-set="additional_title">Booking - Checkout</t>
+            <t t-set="no_footer" t-value="1"/>
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <t t-call="altanmia_resource_booking.wizard_checkout">
+                                <t t-set="step" t-value="20" />
+                            </t>
+                        </div>
+                        <div class="col-12 col-xl-auto order-xl-2 d-none d-xl-block">
+                            <t t-call="altanmia_resource_booking.booking_summary">
+                                <t t-set="redirect" t-valuef="/booking/checkout"/>
+                            </t>
+                        </div>
+                        <div class="col-12 col-xl order-xl-1 oe_cart">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h3 class="o_page_header mt8">Billing Address</h3>
+                                </div>
+                                <div class="col-lg-6 one_kanban">
+                                    <t t-call="altanmia_resource_booking.address_kanban">
+                                        <t t-set='contact' t-value="website_booking_order.partner_id"/>
+                                        <t t-set='selected' t-value="1"/>
+                                        <t t-set='readonly' t-value="1"/>
+                                        <t t-set='allow_edit' t-value="1"/>
+                                    </t>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-between mt-3">
+                                <a role="button" t-attf-href="/booking/#{book_profile_id}/profile"
+                                   class="btn btn-secondary mb32 d-none d-xl-inline-block">
+                                    <span class="fa fa-chevron-left"/>
+                                    <span class="">Modify Dates</span>
+                                </a>
+                                <a role="button" href="/booking/confirm_order" class="btn btn-primary mb32">
+                                    <span>Confirm</span>
+                                    <i class="fa fa-chevron-right"/>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Include sale-related values in payment checkout form to pass them to the client -->
+    <template id="payment_checkout_inherit" inherit_id="payment.checkout">
+        <xpath expr="//form[@name='o_payment_checkout']" position="attributes">
+            <attribute name="t-att-data-booking_order_id">booking_order_id</attribute>
+        </xpath>
+    </template>
+
+    <template id="address" name="Address Management">
+        <t t-set="no_footer" t-value="1"/>
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="container oe_website_sale py-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <t t-call="altanmia_resource_booking.wizard_checkout">
+                                <t t-set="step" t-value="20" />
+                            </t>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-xl-auto order-xl-2 d-none d-xl-block">
+                            <t t-call="altanmia_resource_booking.booking_summary">
+                                <t t-set="hide_promotions">True</t>
+                                <t t-set="redirect" t-valuef="/booking/address"/>
+                            </t>
+                        </div>
+                        <div class="col-12 col-xl order-xl-1 oe_cart">
+                            <div>
+                                <t t-if="mode == ('new', 'billing')">
+                                    <h2 class="o_page_header mt8">Your Address
+                                        <small> or </small>
+                                        <a role="button" href='/web/login?redirect=/booking/checkout' class='btn btn-primary' style="margin-top: -11px">Log In</a>
+                                    </h2>
+                                </t>
+                                <t t-if="mode == ('edit', 'billing')">
+                                    <h2 class="o_page_header mt8">Your Address</h2>
+                                </t>
+                                <t t-if="mode[1] == 'shipping'">
+                                    <h2 class="o_page_header mt8">Shipping Address </h2>
+                                </t>
+                                <t t-if="partner_id == website_booking_order.partner_shipping_id.id == website_booking_order.partner_invoice_id.id">
+                                    <div class="alert alert-warning" role="alert" t-if="not only_services">
+                                        <h4 class="alert-heading">Be aware!</h4>
+                                        <p  groups="sale.group_delivery_invoice_address">
+                                            You are editing your <b>billing and shipping</b> addresses at the same time!<br/>
+                                            If you want to modify your shipping address, create a <a href='/booking/address'>new address</a>.
+                                        </p>
+                                    </div>
+                                </t>
+                                <t t-if="error" t-foreach="error.get('error_message', [])" t-as="err">
+                                    <h5 class="text-danger" t-esc="err" />
+                                </t>
+                                <form action="/booking/address" method="post" class="checkout_autoformat">
+                                    <div class="form-row">
+                                        <div t-attf-class="form-group #{error.get('name') and 'o_has_error' or ''} col-lg-12 div_name">
+                                            <label class="col-form-label" for="name">Name</label>
+                                            <input type="text" name="name" t-attf-class="form-control #{error.get('name') and 'is-invalid' or ''}" t-att-value="'name' in checkout and checkout['name']" />
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group #{error.get('email') and 'o_has_error' or ''} col-lg-6" id="div_email">
+                                            <label t-attf-class="col-form-label #{mode[1] == 'shipping' and 'label-optional' or ''}" for="email">Email</label>
+                                            <input type="email" name="email" t-attf-class="form-control #{error.get('email') and 'is-invalid' or ''}" t-att-value="'email' in checkout and checkout['email']" />
+                                        </div>
+                                        <div t-attf-class="form-group #{error.get('phone') and 'o_has_error' or ''} col-lg-6" id="div_phone">
+                                            <label class="col-form-label" for="phone">Phone</label>
+                                            <input type="tel" name="phone" t-attf-class="form-control #{error.get('phone') and 'is-invalid' or ''}" t-att-value="'phone' in checkout and checkout['phone']" />
+                                        </div>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group #{error.get('street') and 'o_has_error' or ''} col-lg-12 div_street">
+                                            <label class="col-form-label" for="street">Street <span class="d-none d-md-inline"> and Number</span></label>
+                                            <input type="text" name="street" t-attf-class="form-control #{error.get('street') and 'is-invalid' or ''}" t-att-value="'street' in checkout and checkout['street']" />
+                                        </div>
+                                        <div t-attf-class="form-group #{error.get('street2') and 'o_has_error' or ''} col-lg-12 div_street2">
+                                            <label class="col-form-label label-optional" for="street2">Street 2</label>
+                                            <input type="text" name="street2" t-attf-class="form-control #{error.get('street2') and 'is-invalid' or ''}" t-att-value="'street2' in checkout and checkout['street2']" />
+                                        </div>
+                                        <div class="w-100"/>
+                                        <t t-set='zip_city' t-value='country and [x for x in country.get_address_fields() if x in ["zip", "city"]] or ["city", "zip"]'/>
+                                        <t t-if="'zip' in zip_city and zip_city.index('zip') &lt; zip_city.index('city')">
+                                            <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-md-4 div_zip">
+                                                <label class="col-form-label label-optional" for="zip">Zip Code</label>
+                                                <input type="text" name="zip" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="'zip' in checkout and checkout['zip']" />
+                                            </div>
+                                        </t>
+                                        <div t-attf-class="form-group #{error.get('city') and 'o_has_error' or ''} col-md-8 div_city">
+                                            <label class="col-form-label" for="city">City</label>
+                                            <input type="text" name="city" t-attf-class="form-control #{error.get('city') and 'is-invalid' or ''}" t-att-value="'city' in checkout and checkout['city']" />
+                                        </div>
+                                        <t t-if="'zip' in zip_city and zip_city.index('zip') &gt; zip_city.index('city')">
+                                            <div t-attf-class="form-group #{error.get('zip') and 'o_has_error' or ''} col-md-4 div_zip">
+                                                <label class="col-form-label label-optional" for="zip">Zip Code</label>
+                                                <input type="text" name="zip" t-attf-class="form-control #{error.get('zip') and 'is-invalid' or ''}" t-att-value="'zip' in checkout and checkout['zip']" />
+                                            </div>
+                                        </t>
+                                        <div class="w-100"/>
+                                        <div t-attf-class="form-group #{error.get('country_id') and 'o_has_error' or ''} col-lg-6 div_country">
+                                            <label class="col-form-label" for="country_id">Country</label>
+                                            <select id="country_id" name="country_id" t-attf-class="form-control #{error.get('country_id') and 'is-invalid' or ''}" t-att-mode="mode[1]">
+                                                <option value="">Country...</option>
+                                                <t t-foreach="countries" t-as="c">
+                                                    <option t-att-value="c.id" t-att-selected="c.id == (country and country.id or -1)">
+                                                        <t t-esc="c.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div t-attf-class="form-group #{error.get('state_id') and 'o_has_error' or ''} col-lg-6 div_state" t-att-style="(not country or not country.state_ids) and 'display: none'">
+                                            <label class="col-form-label" for="state_id">State / Province</label>
+                                            <select name="state_id" t-attf-class="form-control #{error.get('state_id') and 'is-invalid' or ''}" data-init="1">
+                                                <option value="">State / Province...</option>
+                                                <t t-foreach="country_states" t-as="s">
+                                                    <option t-att-value="s.id" t-att-selected="s.id == ('state_id' in checkout and country and checkout['state_id'] != '' and int(checkout['state_id']))">
+                                                        <t t-esc="s.name" />
+                                                    </option>
+                                                </t>
+                                            </select>
+                                        </div>
+                                        <div class="w-100"/>
+                                        <t t-if="mode == ('new', 'billing') and not only_services">
+                                            <div class="col-lg-12">
+                                                <div class="checkbox">
+                                                  <label>
+                                                    <input type="checkbox" id='shipping_use_same' class="mr8" name='use_same' value="1" checked='checked'/>Ship to the same address
+                                                    <span class='ship_to_other text-muted' style="display: none">&amp;nbsp;(<i>Your shipping address will be requested later) </i></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </div>
+
+                                    <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()" />
+                                    <input type="hidden" name="submitted" value="1" />
+                                    <input type="hidden" name="partner_id" t-att-value="partner_id or '0'" />
+                                    <input type="hidden" name="callback" t-att-value="callback" />
+                                    <!-- Example -->
+                                    <input type="hidden" name="field_required" t-att-value="'phone,name'" />
+
+                                    <div class="d-flex justify-content-between">
+                                        <a role="button" t-att-href="mode == ('new', 'billing') and '/booking/%s/profile' %book_profile_id or '/booking/checkout'" class="btn btn-secondary mb32">
+                                            <i class="fa fa-chevron-left"/>
+                                            <span>Back</span>
+                                        </a>
+                                        <a role="button" href="#" class="btn btn-primary mb32 a-submit a-submit-disable a-submit-loading">
+                                            <span>Next</span>
+                                            <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

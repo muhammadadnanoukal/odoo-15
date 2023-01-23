@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="answer_view_form" model="ir.ui.view">
+        <field name="name">tanmia.booking.answer.form</field>
+        <field name="model">tanmia.booking.answer</field>
+        <field name="arch" type="xml">
+            <form string="Answer">
+                <group>
+                    <field name="name"/>
+                </group>
+            </form>
+        </field>
+    </record>
+</odoo>

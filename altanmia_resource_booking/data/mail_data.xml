@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="booking_calendar_event_booked" model="mail.message.subtype">
+        <field name="name">Booking Confirmed</field>
+        <field name="res_model">calendar.event</field>
+        <field name="default" eval="False"/>
+        <field name="description">Booking Confirmed</field>
+        <field name="hidden" eval="True"/>
+    </record>
+
+    <record id="booking_calendar_event_canceled" model="mail.message.subtype">
+        <field name="name">Booking Canceled</field>
+        <field name="res_model">calendar.event</field>
+        <field name="default" eval="True"/>
+        <field name="description">Booking Canceled</field>
+        <field name="hidden" eval="True"/>
+    </record>
+
+    <record id="booking_profile_booked" model="mail.message.subtype">
+        <field name="name">Booking Confirmed</field>
+        <field name="sequence">10</field>
+        <field name="res_model">tanmia.booking.book.profile</field>
+        <field name="default" eval="True"/>
+        <field name="parent_id" ref="booking_calendar_event_booked"/>
+        <field name="relation_field">book_profile_id</field>
+    </record>
+
+    <record id="booking_profile_canceled" model="mail.message.subtype">
+        <field name="name">Booking Canceled</field>
+        <field name="sequence">11</field>
+        <field name="res_model">tanmia.booking.book.profile</field>
+        <field name="default" eval="True"/>
+        <field name="parent_id" ref="booking_calendar_event_canceled"/>
+        <field name="relation_field">book_profile_id</field>
+    </record>
+</odoo>
