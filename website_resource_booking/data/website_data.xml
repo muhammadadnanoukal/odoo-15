@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="web_menu_booking" model="website.menu">
+            <field name="name">Booking</field>
+            <field name="url">/booking</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence">55</field>
+        </record>
+
+        <record id="feature_module_booking"
+                model="website.configurator.feature">
+            <field name="name">Booking</field>
+            <field name="description">Self-service booking system</field>
+            <field name="sequence">14</field>
+            <field name="website_config_preselection">schedule_appointments</field>
+            <field name="module_id" ref="base.module_website_resource_booking"/>
+            <field name="icon">fa-address-card</field>
+            <field name="menu_company">False</field>
+            <field name="menu_sequence">55</field>
+            <field name="feature_url">/booking</field>
+        </record>
+    </data>
+</odoo>

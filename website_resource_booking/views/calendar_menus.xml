@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<odoo>
+
+    <menuitem
+        id="website_resource_booking_menu"
+        parent="website.menu_website_global_configuration"
+        name="Booking"
+        action="altanmia_resource_booking.tanmia_booking_book_profile_action"
+        sequence="200"/>
+</odoo>

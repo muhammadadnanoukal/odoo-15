@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<odoo>
+<data>
+    <record id="tanmia_booking_book_profile_view_kanban" model="ir.ui.view">
+        <field name="name">tanmia.booking.book.profile.view.kanban.inherit.website</field>
+        <field name="model">tanmia.booking.book.profile</field>
+        <field name="inherit_id" ref="altanmia_resource_booking.tanmia_booking_book_profile_view_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//templates" position="before">
+                <field name="is_published"/>
+                <field name="website_url"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_kanban_card_header')]" position="before">
+                <div class="ribbon ribbon-top-right" attrs="{'invisible': [('is_published', '=', False)]}">
+                    <span>Published</span>
+                </div>
+            </xpath>
+            <xpath expr="//div[hasclass('o_appointment_kanban_box')]/div[1]" position="inside">
+                <span>
+                    <a t-attf-href="#{record.website_url.raw_value}" class="mr-2">Published</a>
+                    <field name="is_published" widget='boolean_toggle'/>
+                </span>
+            </xpath>
+            <xpath expr="//button[@name='action_share']" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_published', '=', False)]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="tanmia_booking_book_profile_view_form" model="ir.ui.view">
+        <field name="name">tanmia.booking.book.profile.view.form.inherit.website</field>
+        <field name="model">tanmia.booking.book.profile</field>
+        <field name="inherit_id" ref="altanmia_resource_booking.tanmia_booking_book_profile_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_published', '=', False)]}</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_customer_preview']" position="replace">
+                <field name="website_url" invisible="1"/>
+                <field name="is_published" widget="website_redirect_button"/>
+            </xpath>
+        </field>
+    </record>
+</data>
+</odoo>

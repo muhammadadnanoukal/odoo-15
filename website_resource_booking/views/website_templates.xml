@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="user_navbar" inherit_id="website.user_navbar">
+<!--        <xpath expr="//div[@id='oe_applications']" position="replace">-->
+<!--            <a href="#" class="fa fa-th o_menu_toggle" accesskey="h"/>-->
+<!--        </xpath>-->
+<!--        <xpath expr="//div[hasclass('o_menu_sections')]" position="before">-->
+<!--            <div class="o_menu_brand">Website</div>-->
+<!--        </xpath>-->
+    </template>
+
+    <template id="user_navbar_inherit_website_enterprise_inherit_website_resource_booking"
+              inherit_id="user_navbar_inherit_website_resource_booking">
+        <xpath expr="//div[@name='module_website_resource_booking']" position="attributes">
+            <attribute name="name"/>
+            <attribute name="t-att-data-module-id"/>
+            <attribute name="t-att-data-module-shortdesc"/>
+            <attribute name="if">env.user.has_group('altanmia_resource_booking.group_calendar_manager')</attribute>
+        </xpath>
+        <xpath expr="//div[@id='edit-page-menu']" position="after">
+            <t t-if="main_object._name == 'tanmia.booking.book.profile'" t-set="action" t-value="'altanmia_resource_booking.tanmia_booking_book_profile_action'"/>
+        </xpath>
+    </template>
+
+</odoo>
