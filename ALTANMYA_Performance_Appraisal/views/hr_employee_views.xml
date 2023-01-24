@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_employee_evaluation_view_form_inherit" model="ir.ui.view">
+        <field name="name">hr.employee.evaluation.view.form.inherit</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[3]" position="after">
+                <page string="Evaluation Configurations">
+                    <group>
+                        <group>
+                            <field name="has_evaluation"/>
+                            <field name="hr_responsible" attrs="{'readonly': [('has_evaluation', '=', False)], 'required': [('has_evaluation', '=', True)]}"/>
+                            <field name="evaluation_template_type_id" attrs="{'readonly': [('has_evaluation', '=', False)], 'required': [('has_evaluation', '=', True)]}"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

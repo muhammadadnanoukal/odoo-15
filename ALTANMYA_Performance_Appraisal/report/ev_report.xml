@@ -1,0 +1,415 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="et_report">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="d-flex flex-row justify-content-between">
+                            <div class="col-9 m-2">
+                                <img class="img" src="/ALTANMYA_Performance_Appraisal/static/src/img/logo.png"/>
+                            </div>
+                            <div class="col-3 m-2 pt-5 float-right">
+                                <span class="font-weight-bold">QMS Code:</span>
+                                <span t-field="o.qms_code"/>
+                            </div>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <tbody>
+                                    <tr>
+                                        <td style="background-color: #F4F4F4;" class="border" align="center"
+                                            valign="middle">
+                                            <span class="font-weight-bold">Employee Name:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.employee_id"/>
+                                        </td>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Department:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.department_id"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Management:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.management_id"/>
+                                        </td>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Job Title:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.job_title"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Evaluation Template Type:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.evaluation_template_id"/>
+                                        </td>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Scoring System:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.scoring_system"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Evaluation Type:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.evaluation_type"/>
+                                        </td>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">HR Responsible:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.hr_responsible"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Appraiser:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.env['res.users'].browse(o.appraiser_id).name"/>
+                                        </td>
+                                        <td class="border" align="center" valign="middle"
+                                            style="background-color: #F4F4F4;">
+                                            <span class="font-weight-bold">Date Created:</span>
+                                        </td>
+                                        <td class="border" align="center" valign="middle">
+                                            <span t-field="o.date"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <tbody>
+                                    <tr>
+                                        <td style="background-color: #F4F4F4;" class="border" align="center"
+                                            valign="middle">
+                                            <span class="font-weight-bold">Overall Score</span>
+                                        </td>
+                                        <td style="background-color: #F4F4F4;" class="border" align="center"
+                                            valign="middle">
+                                            <span t-field="o.overall_score"/>
+                                        </td>
+                                        <td style="background-color: #F4F4F4;" class="border" align="center"
+                                            valign="middle">
+                                            <span t-field="o.overall_rate"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle" colspan="12">
+                                            <p class="font-weight-bold">Evaluation Sections</p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="o.section_ids" t-as="section">
+                                        <tr style="background-color: #F4F4F4;">
+                                            <td class="border" align="center" valign="middle">
+                                                <span class="font-weight-bold" t-field="section.section_type_id"/>
+                                            </td>
+                                            <td class="border" align="center" valign="middle">
+                                                <p class="font-weight-bold">Score</p>
+                                            </td>
+                                            <td class="border" align="center" valign="middle">
+                                                <p class="font-weight-bold">Weight</p>
+                                            </td>
+                                            <td class="border" align="center" valign="middle">
+                                                <p class="font-weight-bold">Final Score</p>
+                                            </td>
+                                            <td class="border" align="center" valign="middle">
+                                                <p class="font-weight-bold">Notes</p>
+                                            </td>
+                                        </tr>
+                                        <t t-foreach="section.section_line_ids" t-as="section_line">
+                                            <tr>
+                                                <td class="border" align="center" valign="middle">
+                                                    <span t-field="section_line.criterion_id"/>
+                                                </td>
+                                                <td class="border" align="center" valign="middle">
+                                                    <span t-field="section_line.score"/>
+                                                </td>
+                                                <td class="border" align="center" valign="middle">
+                                                    <span t-field="section_line.weight"/>
+                                                </td>
+                                                <td class="border" align="center" valign="middle">
+                                                    <span t-field="section_line.final_score"/>
+                                                </td>
+                                                <td class="border" align="center" valign="middle">
+                                                    <span t-field="section_line.notes"/>
+                                                </td>
+                                            </tr>
+                                        </t>
+                                        <tr style="background-color: #F4F4F4;">
+                                            <td class="border" align="center" valign="middle" colspan="12">
+                                                <span class="font-weight-bold">Section Notes</span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="border" align="center" valign="middle">
+                                                <p class="font-weight-bold">Sub Score</p>
+                                            </td>
+                                            <td class="border" align="center" valign="middle" colspan="2">
+                                                <span class="font-weight-bold" t-field="section.final_score"/>
+                                            </td>
+                                            <td class="border" align="center" valign="middle" colspan="2">
+                                                <span class="font-weight-bold" t-field="section.notes"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                            <p style="page-break-before:always;"/>
+                            <p style="page-break-after:always;"/>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle" colspan="12">
+                                            <p class="font-weight-bold">Attendance Information</p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Absent Days:
+                                            </span>
+                                            <span t-field="o.no_of_absent_days"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Delay:
+                                            </span>
+                                            <span t-field="o.no_of_delay"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Verbal Warnings:
+                                            </span>
+                                            <span t-field="o.no_of_verbal_warnings"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Sick Days:
+                                            </span>
+                                            <span t-field="o.no_of_sick_days"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Early Leave:
+                                            </span>
+                                            <span t-field="o.no_of_early_leave"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Written Warnings:
+                                            </span>
+                                            <span t-field="o.no_of_written_warnings"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Absent Hours:
+                                            </span>
+                                            <span t-field="o.no_of_absent_hours"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Unpaid Days:
+                                            </span>
+                                            <span t-field="o.no_of_unpaid_days"/>
+                                        </td>
+                                        <td class="border">
+                                            <span class="font-weight-bold">
+                                                Number of Deviations:
+                                            </span>
+                                            <span t-field="o.no_of_deviations"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle" colspan="12">
+                                            <p class="font-weight-bold">Suggestions Improvement</p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle">
+                                            <br/>
+                                            <br/>
+                                            <span t-field="o.suggestion_improvements"/>
+                                            <br/>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle">
+                                            <p class="font-weight-bold">Appraiser Comments &amp; Signature</p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle">
+                                            <br/>
+                                            <br/>
+                                            <span t-field="o.appraiser_comments"/>
+                                            <br/>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle">
+                                            <p class="font-weight-bold">Concerned Employee Comments &amp;
+                                                Signature
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle">
+                                            <br/>
+                                            <br/>
+                                            <span t-field="o.concerned_employee_comments"/>
+                                            <br/>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr style="background-color: #F4F4F4;">
+                                        <td class="border" align="center" valign="middle">
+                                            <p class="font-weight-bold">Recommendations</p>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr>
+                                        <td class="border" align="center" valign="middle">
+                                            <br/>
+                                            <br/>
+                                            <span t-field="o.recommendations"/>
+                                            <br/>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div>
+                            <table class="table table-light">
+                                <thead>
+                                    <tr>
+                                        <td class="border" colspan="4">
+                                            <br/>
+                                            <p class="font-weight-bold">Department Manager:</p>
+                                            <br/>
+                                        </td>
+                                        <td class="border" colspan="4">
+                                            <br/>
+                                            <p class="font-weight-bold">Date:</p>
+                                            <br/>
+                                        </td>
+                                        <td class="border" colspan="4">
+                                            <br/>
+                                            <p class="font-weight-bold">HR Department:</p>
+                                            <br/>
+                                        </td>
+                                        <td class="border" colspan="4">
+                                            <br/>
+                                            <p class="font-weight-bold">Date:</p>
+                                            <br/>
+                                        </td>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="footer o_standard_footer">
+                        <div class="text-center" style="border-top: 1px solid black;">
+                            <div class="text-muted">
+                                Page:
+                                <span class="page"/>
+                                /
+                                <span class="topage"/>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

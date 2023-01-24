@@ -1,0 +1,56 @@
+<odoo>
+    <data>
+        <record id='evaluation_section_type_view_form' model='ir.ui.view'>
+            <field name="name">evaluation.section.type.view.form</field>
+            <field name="model">evaluation.section.type</field>
+            <field name="arch" type="xml">
+                <form string="Evaluation Section Type">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="type"/>
+                                <field name="percentage" widget="percentage"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_evaluation_section_type_tree" model="ir.ui.view">
+            <field name="name">evaluation.section.tree</field>
+            <field name="model">evaluation.section.type</field>
+            <field name="arch" type="xml">
+                <tree string="Evaluation Section Type">
+                    <field name="name"/>
+                    <field name="type"/>
+                    <field name="percentage"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_evaluation_section_type" model="ir.actions.act_window">
+            <field name="name">Evaluation Section Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">evaluation.section.type</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Your First Evaluation Section Type Here!
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_hr_evaluation_section_type"
+                action="action_evaluation_section_type"
+                parent="menu_hr_employee_evaluation"
+                groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators"
+                name="Evaluation Section Type"/>
+    </data>
+</odoo>

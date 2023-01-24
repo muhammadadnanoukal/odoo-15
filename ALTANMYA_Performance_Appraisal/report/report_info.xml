@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <odoo>
+        <record id="paperformat_MER" model="report.paperformat">
+            <field name="name">MER</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">7</field>
+            <field name="margin_bottom">14</field>
+            <field name="margin_left">3</field>
+            <field name="margin_right">3</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <record id="action_evaluation_template_report" model="ir.actions.report">
+            <field name="name">Miamed Evaluation Template Report</field>
+            <field name="model">evaluation.template</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">ALTANMYA_Performance_Appraisal.et_report</field>
+            <field name="report_file">ALTANMYA_Performance_Appraisal.et_report</field>
+            <field name="print_report_name">'%s - %s' % (object.name, object.employee_id.name)</field>
+            <field name="binding_model_id" ref="model_evaluation_template"/>
+            <field name="binding_type">report</field>
+            <field name="paperformat_id" ref="paperformat_MER"/>
+        </record>
+</odoo>

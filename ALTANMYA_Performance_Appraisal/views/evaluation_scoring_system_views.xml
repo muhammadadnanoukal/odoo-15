@@ -1,0 +1,61 @@
+<odoo>
+    <data>
+        <record id='evaluation_scoring_system_view_form' model='ir.ui.view'>
+            <field name="name">evaluation.scoring.system.view.form</field>
+            <field name="model">evaluation.scoring.system</field>
+            <field name="arch" type="xml">
+                <form string="Evaluation Scoring System">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page string="Score &amp; Rate" name="score_pair_ids">
+                                <field name="score_pair_ids"
+                                       widget="one2many"
+                                       mode="tree">
+                                    <tree string="Score &amp; Rate" editable="bottom">
+                                        <field name="rate"/>
+                                        <field name="score"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_evaluation_scoring_system_tree" model="ir.ui.view">
+            <field name="name">evaluation.scoring.system.tree</field>
+            <field name="model">evaluation.scoring.system</field>
+            <field name="arch" type="xml">
+                <tree string="Evaluation Scoring System">
+                    <field name="name" readonly="1"/>
+                    <field name="scoring_system_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_evaluation_scoring_system" model="ir.actions.act_window">
+            <field name="name">Evaluation Scoring System</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">evaluation.scoring.system</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Your First Evaluation Scoring System Here!
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_hr_evaluation_scoring_system"
+                action="action_evaluation_scoring_system"
+                parent="menu_hr_employee_evaluation"
+                groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators"
+                name="Evaluation Scoring System"/>
+    </data>
+</odoo>

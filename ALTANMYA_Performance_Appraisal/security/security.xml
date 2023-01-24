@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="evaluation_category" model="ir.module.category">
+        <field name="name">Evaluation Type Restricted Rules Category</field>
+        <field name="description">Evaluation Type Restricted Rules Category</field>
+    </record>
+
+    <record id="evaluation_group_managers" model="res.groups">
+        <field name="name">Evaluation Managers Group</field>
+        <field name="category_id" ref="evaluation_category"/>
+    </record>
+
+    <record id="evaluation_group_hr" model="res.groups">
+        <field name="name">Evaluation HR Group</field>
+        <field name="category_id" ref="evaluation_category"/>
+    </record>
+
+    <record id="evaluation_group_specific_users" model="res.groups">
+        <field name="name">Evaluation Specific Users Group</field>
+        <field name="category_id" ref="evaluation_category"/>
+    </record>
+
+    <record id="evaluation_group_creators" model="res.groups">
+        <field name="name">Evaluation Creators Group</field>
+        <field name="category_id" ref="evaluation_category"/>
+    </record>
+
+    <record id="evaluation_group_concerned_employees" model="res.groups">
+        <field name="name">Evaluation Concerned Employees Group</field>
+        <field name="category_id" ref="evaluation_category"/>
+    </record>
+
+    <record id="evaluation_template_concerned_employee_rule" model="ir.rule">
+        <field name="name">Evaluation Template Record Rule (Concerned Employees)</field>
+        <field name="model_id" ref="model_evaluation_template"/>
+        <field name="domain_force">[('employee_user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('evaluation_group_concerned_employees'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="evaluation_template_evaluators_managers_rule" model="ir.rule">
+        <field name="name">Evaluation Template Record Rule (Evaluators: Direct Managers)</field>
+        <field name="model_id" ref="model_evaluation_template"/>
+        <field name="domain_force">['|', '&amp;', ('responsible_users_ids', 'in', user.id), ('department_id.id', '=', user.employee_id.department_id.id),
+                                    ('employee_id.parent_id.user_id.id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('evaluation_group_managers'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="evaluation_template_evaluators_hr_rule" model="ir.rule">
+        <field name="name">Evaluation Template Record Rule (Evaluators: HR)</field>
+        <field name="model_id" ref="model_evaluation_template"/>
+        <field name="domain_force">[('responsible_users_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('evaluation_group_hr'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="evaluation_template_evaluators_specific_users_rule" model="ir.rule">
+        <field name="name">Evaluation Template Record Rule (Evaluators: Specific Users)</field>
+        <field name="model_id" ref="model_evaluation_template"/>
+        <field name="domain_force">[('responsible_users_ids', 'in', user.id)]</field>
+        <field name="groups" eval="[(4, ref('evaluation_group_specific_users'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <record id="evaluation_template_creators_rule" model="ir.rule">
+        <field name="name">Evaluation Template Record Rule (Evaluation Creators: Departments Heads &amp; HR)</field>
+        <field name="model_id" ref="model_evaluation_template"/>
+        <field name="groups" eval="[(4, ref('evaluation_group_creators'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="True"/>
+        <field name="perm_create" eval="True"/>
+        <field name="perm_unlink" eval="True"/>
+    </record>
+
+</odoo>

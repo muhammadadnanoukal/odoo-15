@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_evaluation_template" model="ir.sequence">
+            <field name="name">Evaluation Template</field>
+            <field name="code">evaluation.template</field>
+            <field name="prefix">EVTMP</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_template_type" model="ir.sequence">
+            <field name="name">Evaluation Template Type</field>
+            <field name="code">evaluation.template.type</field>
+            <field name="prefix">EVTT</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_section" model="ir.sequence">
+            <field name="name">Evaluation Section</field>
+            <field name="code">evaluation.section</field>
+            <field name="prefix">EVSEC</field>
+            <field name="padding">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_template_type_section" model="ir.sequence">
+            <field name="name">Evaluation Template Type Section</field>
+            <field name="code">evaluation.template.type.section</field>
+            <field name="prefix">EVTSEC</field>
+            <field name="padding">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_section_line" model="ir.sequence">
+            <field name="name">Evaluation Section Line</field>
+            <field name="code">evaluation.section.line</field>
+            <field name="prefix">EVLINE</field>
+            <field name="padding">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_template_type_section_line" model="ir.sequence">
+            <field name="name">Evaluation Template Type Section Line</field>
+            <field name="code">evaluation.template.type.section.line</field>
+            <field name="prefix">EVTLINE</field>
+            <field name="padding">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_section_type" model="ir.sequence">
+            <field name="name">Evaluation Section Type</field>
+            <field name="code">evaluation.section.type</field>
+            <field name="prefix">ST</field>
+            <field name="padding">2</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_criterion" model="ir.sequence">
+            <field name="name">Evaluation Criterion</field>
+            <field name="code">evaluation.criterion</field>
+            <field name="prefix">EC</field>
+            <field name="padding">2</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_evaluation_scoring_system" model="ir.sequence">
+            <field name="name">Evaluation System</field>
+            <field name="code">evaluation.scoring.system</field>
+            <field name="prefix">SS</field>
+            <field name="padding">2</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

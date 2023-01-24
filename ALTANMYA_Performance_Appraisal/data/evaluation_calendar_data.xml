@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="calendar_event_employee_evaluation" model="calendar.event.type">
+            <field name="name">Employees Evaluation</field>
+        </record>
+    </data>
+</odoo>

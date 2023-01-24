@@ -1,0 +1,73 @@
+<odoo>
+    <data>
+        <record id='evaluation_template_type_view_form' model='ir.ui.view'>
+            <field name="name">evaluation.template.type.view.form</field>
+            <field name="model">evaluation.template.type</field>
+            <field name="arch" type="xml">
+                <form string="Evaluation Template Type">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="evaluation_type"/>
+                                <field name="scoring_system"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Evaluation Sections" name="section_ids">
+                                <field name="section_ids"
+                                       widget="one2many"
+                                       mode="tree">
+                                    <tree string="Evaluation Sections">
+                                        <field name="section_type_id"/>
+                                        <field name="evaluation_responsibility"/>
+                                        <field name="specific_user"/>
+                                        <field name="weight"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Score Notes">
+                                <group string="Appraiser Notes in Case of Low or High Score">
+                                    <field name="score_note_selection"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id='evaluation_template_type_view_tree' model='ir.ui.view'>
+            <field name="name">evaluation.template.type.view.tree</field>
+            <field name="model">evaluation.template.type</field>
+            <field name="arch" type="xml">
+                <tree string="Evaluation Template Type">
+                    <field name="name"/>
+                    <field name="evaluation_type"/>
+                    <field name="scoring_system"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_evaluation_template_type" model="ir.actions.act_window">
+            <field name="name">Evaluation Template Type</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">evaluation.template.type</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Your First Evaluation Template Type Here!
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_hr_evaluation_template_type"
+                action="action_evaluation_template_type"
+                parent="menu_hr_employee_evaluation"
+                groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators"
+                name="Evaluation Template Type"/>
+    </data>
+</odoo>

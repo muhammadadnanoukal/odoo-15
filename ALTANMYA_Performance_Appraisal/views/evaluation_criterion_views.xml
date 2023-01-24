@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+        <record id='evaluation_criterion_view_form' model='ir.ui.view'>
+            <field name="name">evaluation.criterion.view.form</field>
+            <field name="model">evaluation.criterion</field>
+            <field name="arch" type="xml">
+                <form string="Evaluation Criterion">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="criterion"/>
+                                <field name="type"/>
+                                <field name="weight"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_evaluation_criterion_tree" model="ir.ui.view">
+            <field name="name">evaluation.criterion.tree</field>
+            <field name="model">evaluation.criterion</field>
+            <field name="arch" type="xml">
+                <tree string="Evaluation Criterion">
+                    <field name="name" readonly="1"/>
+                    <field name="criterion"/>
+                    <field name="type"/>
+                    <field name="weight"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_evaluation_criterion" model="ir.actions.act_window">
+            <field name="name">Evaluation Criteria</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">evaluation.criterion</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Create Your Evaluation Criteria Here!
+                </p>
+            </field>
+        </record>
+
+        <menuitem
+                id="menu_hr_evaluation_criterion"
+                action="action_evaluation_criterion"
+                parent="menu_hr_employee_evaluation"
+                groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators"
+                name="Evaluation Criterion"/>
+    </data>
+</odoo>
