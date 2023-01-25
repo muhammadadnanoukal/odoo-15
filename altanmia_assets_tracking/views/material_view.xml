@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="assets_material_tree" model="ir.ui.view">
+        <field name="name">material.tree</field>
+        <field name="model">tanmia.assets.material</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" string="Material Name" optional="show"/>
+                <field name="description" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="assets_material_panel" model="ir.ui.view">
+        <field name="name">material.panel</field>
+        <field name="model">tanmia.assets.material</field>
+        <field name="arch" type="xml">
+            <search>
+            </search>
+        </field>
+    </record>
+
+    <record id="assets_material_form" model="ir.ui.view">
+        <field name="name">asset.form</field>
+        <field name="model">tanmia.assets.material</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="active" invisible="1"/>
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="name" string="Material Name"/>
+                            <field name="description"/>
+                        </group>
+
+                    </group>
+                </sheet>
+
+                <!--chatter-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- show assets view action-->
+    <record model="ir.actions.act_window" id="action_material_show">
+        <field name="name">Materials</field>
+        <field name="res_model">tanmia.assets.material</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">There is No Material Yet!</p>
+        </field>
+    </record>
+</odoo>

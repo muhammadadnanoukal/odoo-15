@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <!-- Top menu item -->
+        <menuitem id="assets_menu_root"
+            name="Assets Management"
+            web_icon="altanmia_assets_tracking,static/description/icon.png"
+            sequence="0"/>
+
+        <!--Show Assets list menu item-->
+        <menuitem id="assets_assets_menu"
+                  name="Assets"
+                  parent="assets_menu_root"
+                  sequence="1"/>
+        <menuitem id="assets_assets_show"
+                  name="Assets"
+                  action="account_asset.action_account_asset_form"
+                  parent="assets_assets_menu"
+                  sequence="1"/>
+
+        <menuitem id="assets_assets_tag_show"
+                  name="Assets Tags"
+                  action="action_assets_tag_show"
+                  parent="assets_assets_menu"
+                  sequence="2"/>
+
+
+        <!--show Material List Menu Items-->
+        <menuitem id="assets_material_show"
+                  name="Materials"
+                  action="action_material_show"
+                  parent="assets_menu_root"
+                  sequence="2"/>
+
+
+        <menuitem id="assets_locations_show"
+                  name="Locations"
+                  action="stock.action_location_form"
+                  parent="assets_menu_root"
+                  sequence="3"/>
+
+</odoo>
