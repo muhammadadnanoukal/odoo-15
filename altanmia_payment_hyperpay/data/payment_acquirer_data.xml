@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <record id="payment_acquirer_hyperpay" model="payment.acquirer">
+        <field name="name">HyperPay</field>
+        <field name="display_as">Credit Card (powered by HyperPay)</field>
+        <field name="image_128" type="base64" file="altanmia_payment_hyperpay/static/description/icon.png"/>
+        <field name="module_id" ref="base.module_altanmia_payment_hyperpay"/>
+        <field name="description" type="html">
+            <p>
+                Hyperpay is a leading payment gateway in MENA,
+                providing smart payment solutions that fulfill the payment needs of ecommerce and all internet businesses
+            </p>
+            <ul class="list-inline">
+                <li><i class="fa fa-check"/>Online Payment</li>
+                <li><i class="fa fa-check"/>Payment Status Tracking</li>
+            </ul>
+        </field>
+        <field name="payment_icon_ids"
+               eval="[(6, 0, [
+                   ref('payment.payment_icon_cc_jcb'),
+                   ref('payment.payment_icon_cc_mastercard'),
+                   ref('payment.payment_icon_cc_western_union'),
+                   ref('payment.payment_icon_cc_webmoney'),
+                   ref('payment.payment_icon_cc_visa'),
+               ])]"/>
+        <field name="provider">hyperpay</field>
+        <field name="redirect_form_view_id" ref="redirect_form"/>
+        <field name="support_authorization">False</field>
+        <field name="support_refund"></field>
+        <field name="support_tokenization">True</field>
+        <field name="allow_tokenization">True</field>
+    </record>
+
+    <record id="payment_method_hyperpay" model="account.payment.method">
+        <field name="name">HyperPay</field>
+        <field name="code">hyperpay</field>
+        <field name="payment_type">inbound</field>
+    </record>
+
+</odoo>

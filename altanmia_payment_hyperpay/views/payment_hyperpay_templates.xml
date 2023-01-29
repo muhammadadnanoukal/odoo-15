@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="redirect_form">
+        <form t-att-action="form_url" class="paymentWidgets" data-brands="VISA MASTER AMEX">
+            <input type="hidden" name="back_url" t-att-value="back_url"/>
+            <input type="hidden" name="js_url" t-att-value="js_url"/>
+        </form>
+    </template>
+
+    <template id="hyperpay_form">
+        <div class="modal fade o_modal_fullscreen o_form_image_preview" role="dialog" tabindex="-1">
+            <div class="o_viewer_content">
+                <div class="o_viewer-header">
+                    <a aria-label="Close" class="o_close_btn float-right" href="#" role="button" title="Close">×</a>
+                </div>
+                <div class="o_viewer_img_wrapper">
+                    <div class="o_viewer_zoomer">
+                        <form t-att-action="back_url" class="paymentWidgets" data-brands="VISA MASTER AMEX"></form>
+                        <script type="text/javascript" t-att-src="js_url"></script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+</odoo>
