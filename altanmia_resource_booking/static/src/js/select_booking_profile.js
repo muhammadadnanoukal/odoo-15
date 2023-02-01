@@ -4,9 +4,9 @@ odoo.define('altanmia_resource_booking.select_booking_profile', function (requir
 var publicWidget = require('web.public.widget');
 
 publicWidget.registry.BookingProfileSelect = publicWidget.Widget.extend({
-    selector: '.o_appointment_choice',
+    selector: '.b_booking_choice',
     events: {
-        'change select[id="calendarType"]': '_onAppointmentTypeChange',
+        'change select[id="bookingProfile"]': '_onBookingChange',
     },
 
     /**
@@ -16,7 +16,7 @@ publicWidget.registry.BookingProfileSelect = publicWidget.Widget.extend({
         this._super.apply(this, arguments);
         // Check if we cannot replace this by a async handler once the related
         // task is merged in master
-        this._onAppointmentTypeChange = _.debounce(this._onAppointmentTypeChange, 250);
+        this._onBookingChange = _.debounce(this._onBookingChange, 250);
     },
 
     //--------------------------------------------------------------------------
@@ -30,14 +30,14 @@ publicWidget.registry.BookingProfileSelect = publicWidget.Widget.extend({
      * @override
      * @param {Event} ev
      */
-    _onAppointmentTypeChange: function (ev) {
+    _onBookingChange: function (ev) {
         var self = this;
         const appointmentTypeID = $(ev.target).val();
-        this.$(".o_website_appointment_form").attr('action', `/booking/${appointmentTypeID}/profile`);
+        this.$(".b_website_booking_form").attr('action', `/booking/${appointmentTypeID}/profile`);
         this._rpc({
             route: `/booking/${appointmentTypeID}/get_message_intro`,
         }).then(function (message_intro) {
-            self.$('.o_calendar_intro').empty().append(message_intro);
+            self.$('.b_calendar_intro').empty().append(message_intro);
         });
     },
 });

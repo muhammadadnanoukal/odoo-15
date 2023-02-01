@@ -2,11 +2,11 @@
     color: darkgrey;
 }
 
-.o_appointment_index {
+.b_booking_index {
     .o_half_screen_height {
         min-height: 200px !important;
     }
-    .o_appointment_appointments_list {
+    .o_booking_profiles_list {
         header {
             a {
                 transition: all .25s ease-in-out;
@@ -15,17 +15,17 @@
                 }
             }
         }
-        &.opt_appointments_list_cards_bg {
+        &.opt_bookings_list_cards_bg {
             @if (color('body') == $o-portal-default-body-bg) {
                 @extend .bg-200;
             }
         }
-        .appointments_list_columns {
+        .bookings_list_columns {
             header {
                 height: 200px;
             }
         }
-        .o_appointment_unpublished {
+        .b_booking_unpublished {
             bottom: 0;
             padding: $card-spacer-y $card-spacer-x;
         }
@@ -35,7 +35,7 @@
     }
 }
 
-.o_appointment_selection {
+.o_booking_selection {
     select {
         appearance: none;
     }
@@ -50,7 +50,7 @@
     }
 }
 
-.o_appointment_days {
+.b_booking_days {
     font-size: 16px;
     height: 40px;
     .o_weekend {
@@ -67,7 +67,7 @@
              padding: 8px;
         }
     }
-    .o_day:hover, .o_slot_selected {
+    .o_day:hover, .b_slot_selected {
         color: white;
         background-color: theme-color('primary');
     }
@@ -82,7 +82,7 @@
     }
 }
 
-.o_appointment_month {
+.b_booking_month {
     .table {
         border-collapse: separate;
         border-spacing: unset;
@@ -93,10 +93,10 @@
     }
 }
 
-.o_appointment {
-    .o_appointment_availabilities {
+.b_booking {
+    .b_booking_availabilities {
         min-height: 31em;
-        .o_slots_list {
+        .b_slots_list {
             a:hover {
                 color: white!important;
             }

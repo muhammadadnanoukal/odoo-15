@@ -15,6 +15,7 @@ _logger = logging.getLogger(__name__)
 
 class PaymentTransaction(models.Model):
     _inherit = 'payment.transaction'
+    _name = 'payment.transaction'
 
     booking_order_ids = fields.Many2many('sale.order', 'booking_order_transaction_rel', 'transaction_id', 'booking_order_id',
                                       string='Booking Orders', copy=False, readonly=True)
@@ -40,6 +41,8 @@ class PaymentTransaction(models.Model):
         super(PaymentTransaction, self)._set_pending(state_message=state_message)
 
         for record in self:
+            if not record.booking_order_ids:
+                return
             bookings_orders = record.booking_order_ids.filtered(lambda so: so.state in ['draft', 'sent'])
             bookings_orders.filtered(lambda so: so.state == 'draft').with_context(tracking_disable=True).write(
                 {'state': 'sent'})
@@ -52,6 +55,9 @@ class PaymentTransaction(models.Model):
 
     def _check_amount_and_confirm_order(self):
         self.ensure_one()
+        if not self.booking_order_ids:
+            return super(PaymentTransaction, self)._check_amount_and_confirm_order()
+
         for order in self.booking_order_ids.filtered(lambda so: so.state in ('draft', 'sent')):
             if order.currency_id.compare_amounts(self.amount, order.amount_total) == 0:
                 order.with_context(send_email=True).action_confirm()
@@ -74,6 +80,9 @@ class PaymentTransaction(models.Model):
     def _set_authorized(self, state_message=None):
         """ Override of payment to confirm the quotations automatically. """
         super()._set_authorized(state_message=state_message)
+        if not self.booking_order_ids:
+            return
+
         bookings_orders = self.mapped('booking_order_ids').filtered(lambda so: so.state in ('draft', 'sent'))
         for tx in self:
             tx._check_amount_and_confirm_order()
@@ -94,6 +103,8 @@ class PaymentTransaction(models.Model):
             order.message_post(body=message)
 
     def _reconcile_after_done(self):
+        if not self.booking_order_ids:
+            return super(PaymentTransaction, self)._reconcile_after_done()
         """ Override of payment to automatically confirm quotations and generate invoices. """
         bookings_orders = self.mapped('booking_order_ids').filtered(lambda so: so.state in ('draft', 'sent'))
         for tx in self:
@@ -109,6 +120,9 @@ class PaymentTransaction(models.Model):
         return res
 
     def _send_invoice(self):
+        if not self.booking_order_ids:
+            return super(PaymentTransaction, self)._send_invoice()
+
         default_template = self.env['ir.config_parameter'].sudo().get_param('sale.default_invoice_email_template')
         if not default_template:
             return

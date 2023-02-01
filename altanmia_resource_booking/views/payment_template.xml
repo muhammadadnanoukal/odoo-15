@@ -405,7 +405,7 @@
                         <div class="col-12 col-xl order-xl-1 oe_cart">
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <h3 class="o_page_header mt8">Billing Address</h3>
+                                    <h3 class="b_page_header mt8">Billing Address</h3>
                                 </div>
                                 <div class="col-lg-6 one_kanban">
                                     <t t-call="altanmia_resource_booking.address_kanban">
@@ -463,16 +463,16 @@
                         <div class="col-12 col-xl order-xl-1 oe_cart">
                             <div>
                                 <t t-if="mode == ('new', 'billing')">
-                                    <h2 class="o_page_header mt8">Your Address
+                                    <h2 class="b_page_header mt8">Your Address
                                         <small> or </small>
                                         <a role="button" href='/web/login?redirect=/booking/checkout' class='btn btn-primary' style="margin-top: -11px">Log In</a>
                                     </h2>
                                 </t>
                                 <t t-if="mode == ('edit', 'billing')">
-                                    <h2 class="o_page_header mt8">Your Address</h2>
+                                    <h2 class="b_page_header mt8">Your Address</h2>
                                 </t>
                                 <t t-if="mode[1] == 'shipping'">
-                                    <h2 class="o_page_header mt8">Shipping Address </h2>
+                                    <h2 class="b_page_header mt8">Shipping Address </h2>
                                 </t>
                                 <t t-if="partner_id == website_booking_order.partner_shipping_id.id == website_booking_order.partner_invoice_id.id">
                                     <div class="alert alert-warning" role="alert" t-if="not only_services">

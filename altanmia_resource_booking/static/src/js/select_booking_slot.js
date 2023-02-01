@@ -6,29 +6,26 @@ var core = require('web.core');
 var publicWidget = require('web.public.widget');
 var qweb = core.qweb;
 var clicks = 0;
-var appointments = [];
-var numberOfAppointments = 1;
+var bookings = [];
+var numberOfBookings = 1;
 var rpc = require('web.rpc');
 var selectedDaysSlots = {};
 var slotDate = null;
 
 publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
-    selector: '.o_appointment',
+    selector: '.b_booking',
     xmlDependencies: [
-        '/altanmia_resource_booking/static/src/xml/calendar_booking_slots.xml',
         '/altanmia_resource_booking/static/src/xml/booking_times.xml',
          '/altanmia_resource_booking/static/src/xml/booking_submit.xml',
-         '/altanmia_resource_booking/static/src/xml/booking_calendar.xml',
          '/altanmia_resource_booking/static/src/xml/booking_recurrence_form.xml'
          ],
     events: {
         'change select[name="timezone"]': '_onRefresh',
         'change select[id="selectEmployee"]': '_onRefresh',
-        'click .o_js_calendar_navigate': '_onCalendarNavigate',
+        'click .b_js_calendar_navigate': '_onCalendarNavigate',
         'click .o_day': '_onClickDaySlot',
         'click .o_time': '_onTimeClick',
         'click .dropdown-item-number': '_onNumberClick',
-        'click .dropdown-item-type': '_onTypeClick',
         'change .repeat_until': '_onRepeatUntilChange',
         'change .repeat_unit': '_onRepeatUnitChange',
         'change .available_days': '_onDaysChange',
@@ -46,76 +43,76 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
 
     _onAddBookingNumber: async function(ev){
         clicks = 0;
-        appointments = [];
+        bookings = [];
         selectedDaysSlots = {};
 //        var elt = document.getElementById('booking_num_label');
         var maxBooking = 10;
-        numberOfAppointments = parseInt($("#booking_num").val());
+        numberOfBookings = parseInt($("#booking_num").val());
         await this._rpc({
                  route: `/booking/max`,
             }).then((result) => {
                 maxBooking = result;
             });
 
-        if (numberOfAppointments > (maxBooking -1) ){
+        if (numberOfBookings > (maxBooking -1) ){
             return;
         }
 
-        numberOfAppointments++;
-        $("#booking_num").val(numberOfAppointments);
-//        elt.innerHTML = numberOfAppointments;
+        numberOfBookings++;
+        $("#booking_num").val(numberOfBookings);
+//        elt.innerHTML = numberOfBookings;
 
         // CHECK IF ANY DAY IS SELECTED
-        if ($('.o_slot_selected')[0]){
-            const appointmentTypeID = this.$("input[name='appointment_type_id']").val();
-            const appointmentTypeIDs = this.$("input[name='filter_appointment_type_ids']").val();
-            var slots = JSON.parse(this.$('.o_slot_selected').find('div')[0].dataset['availableSlots']);
-            this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
+        if ($('.b_slot_selected')[0]){
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const bookingProfileIDs = this.$("input[name='filter_book_profile_ids']").val();
+            var slots = JSON.parse(this.$('.b_slot_selected').find('div')[0].dataset['bavailableSlots']);
+            this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
         }
     },
 
     _onSubBookingNumber: async function(ev){
         clicks = 0;
-        appointments = [];
+        bookings = [];
         selectedDaysSlots = {};
 //        var elt = document.getElementById('booking_num_label');
-        numberOfAppointments = parseInt($("#booking_num").val());
-        if (numberOfAppointments < 2){
+        numberOfBookings = parseInt($("#booking_num").val());
+        if (numberOfBookings < 2){
             return;
         }
-        numberOfAppointments--;
-        $("#booking_num").val(numberOfAppointments);
-//        elt.innerHTML = numberOfAppointments;
+        numberOfBookings--;
+        $("#booking_num").val(numberOfBookings);
+//        elt.innerHTML = numberOfBookings;
 
         // CHECK IF ANY DAY IS SELECTED
-        if ($('.o_slot_selected')[0]){
-            const appointmentTypeID = this.$("input[name='appointment_type_id']").val();
-            const appointmentTypeIDs = this.$("input[name='filter_appointment_type_ids']").val();
-            var slots = JSON.parse(this.$('.o_slot_selected').find('div')[0].dataset['availableSlots']);
-            this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
+        if ($('.b_slot_selected')[0]){
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const bookingProfileIDs = this.$("input[name='filter_book_profile_ids']").val();
+            var slots = JSON.parse(this.$('.b_slot_selected').find('div')[0].dataset['bavailableSlots']);
+            this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
         }
     },
 
     _change_number_booking: function (ev){
         clicks = 0;
-        appointments = [];
+        bookings = [];
         selectedDaysSlots = {};
 
 //        var elt = document.getElementById('booking_num_label');
-        numberOfAppointments = parseInt($("#booking_num").val());
+        numberOfBookings = parseInt($("#booking_num").val());
 
-        if (numberOfAppointments > 10 || numberOfAppointments < 1 || isNaN(numberOfAppointments)){
-            numberOfAppointments = 1;
+        if (numberOfBookings > 10 || numberOfBookings < 1 || isNaN(numberOfBookings)){
+            numberOfBookings = 1;
         }
-        $("#booking_num").val(numberOfAppointments);
-//        elt.innerHTML = numberOfAppointments;
+        $("#booking_num").val(numberOfBookings);
+//        elt.innerHTML = numberOfBookings;
 
         // CHECK IF ANY DAY IS SELECTED
-        if ($('.o_slot_selected')[0]){
-            const appointmentTypeID = this.$("input[name='appointment_type_id']").val();
-            const appointmentTypeIDs = this.$("input[name='filter_appointment_type_ids']").val();
-            var slots = JSON.parse(this.$('.o_slot_selected').find('div')[0].dataset['availableSlots']);
-            this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
+        if ($('.b_slot_selected')[0]){
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const bookingProfileIDs = this.$("input[name='filter_book_profile_ids']").val();
+            var slots = JSON.parse(this.$('.b_slot_selected').find('div')[0].dataset['bavailableSlots']);
+            this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
         }
     },
 
@@ -123,7 +120,7 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
      * Navigate between the months available in the calendar displayed
      */
     _onCalendarNavigate: function (ev) {
-        var parent = this.$('.o_appointment_month:not(.d-none)');
+        var parent = this.$('.b_booking_month:not(.d-none)');
         let monthID = parseInt(parent.attr('id').split('-')[1]);
         monthID += ((this.$(ev.currentTarget).attr('id') === 'nextCal') ? 1 : -1);
         parent.addClass('d-none');
@@ -134,20 +131,20 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
      * Refresh the slots info when the user modify the timezone or the employee
      */
     _onRefresh: function (ev) {
-        if (this.$("#slots_availabilities")[0]) {
+        if (this.$("#b_slots_availabilities")[0]) {
             var self = this;
-            const appointmentTypeID = this.$("input[name='book_profile_id']").val();
-            const employeeID = this.$("#slots_form select[name='employee_id']").val();
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const employeeID = this.$("#b_slots_form select[name='employee_id']").val();
             const timezone = this.$("select[name='timezone']").val();
             this._rpc({
-                route: `/booking/${appointmentTypeID}/update_available_slots`,
+                route: `/booking/${bookingProfileID}/update_available_slots`,
                 params: {
                     employee_id: employeeID,
                     timezone: timezone,
                 },
             }).then(function (data) {
                 if (data) {
-                    self.$("#slots_availabilities").replaceWith(data);
+                    self.$("#b_slots_availabilities").replaceWith(data);
                 }
             });
         }
@@ -156,22 +153,22 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     _selectMultiBooking: function(ev){
 
         var self = this;
-        const appointmentTypeID = $("#slots_form input[name='book_profile_id']").val();
-        const filterID = $("#slots_form select[name='filter_book_profile_ids']").val();
+        const bookingProfileID = $("#b_slots_form input[name='book_profile_id']").val();
+        const filterID = $("#b_slots_form select[name='filter_book_profile_ids']").val();
         const timezone = $("select[name='timezone']").val();
         this._rpc({
-            route: `/booking/${appointmentTypeID}/multi`,
+            route: `/booking/${bookingProfileID}/multi`,
             params: {
                     filter_booking_ids: filterID,
                     timezone: timezone,
                 },
             }).then(function (data) {
                 if (data) {
-                    if ($('.appointments_recurrence_form').length){
-                        $('.appointments_recurrence_form').replaceWith(data);
+                    if ($('.bookings_recurrence_form').length){
+                        $('.bookings_recurrence_form').replaceWith(data);
                     }else
                     {
-                        self.$("#slots_availabilities").replaceWith(data);
+                        self.$("#b_slots_availabilities").replaceWith(data);
                     }
 
                 }
@@ -179,13 +176,13 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     },
 
     _selectRecurringBooking: async function(ev){
-        if($('#slots_availabilities').length){
-            $('#slots_availabilities').remove();
+        if($('#b_slots_availabilities').length){
+            $('#b_slots_availabilities').remove();
         }
-        else if ($('.appointments_recurrence_form').length){
+        else if ($('.bookings_recurrence_form').length){
             return;
         }
-        let $typeSelection = $('.o_booking_profile_select');
+        let $typeSelection = $('.b_booking_profile_select');
 
         $(qweb.render('altanmia_resource_booking.repeat_every')).insertAfter($typeSelection);
         const $repeatEvery = $('.repeat_every');
@@ -265,11 +262,11 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
         }
         const repeatHour = $('.available_hours').find(":selected").text();
 
-        // TODO: 2 - Get appointment type info (employee_id, appointment_type_id)
-        const employeeID = $("#slots_form select[name='employee_id']").val();
-        const appointmentTypeID = $("input[name='book_profile_id']").val();
-        const appointmentType = document.getElementsByClassName('o_page_header')[0].innerText;
-        const slugifiedName = appointmentType.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+        // TODO: 2 - Get appointment type info (employee_id, book_profile_id)
+        const employeeID = $("#b_slots_form select[name='employee_id']").val();
+        const bookingProfileID = $("input[name='book_profile_id']").val();
+        const bookingProfile = document.getElementsByClassName('b_page_header')[0].innerText;
+        const slugifiedName = bookingProfile.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
         // TODO: 3 - Get recurrent dates using this._rpc
         // TODO: 4 - Create a list of JSON objects for appointments (Check first the returend date type)
@@ -282,19 +279,19 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
                             repeatInterval,
                             repeatUntil,
                             repeatHour,
-                            appointmentTypeID,
+                            bookingProfileID,
                             employeeID]
                 ],
             }).then((result) => {
-                appointments = result;
+                bookings = result;
             });
-        // TODO: 5 - Replace Done button with submit button alongside with stringified appointments info (href formatted)
-        if(appointments.length > 0){
+        // TODO: 5 - Replace Done button with submit button alongside with stringified bookings info (href formatted)
+        if(bookings.length > 0){
             $(ev.currentTarget).replaceWith(
                 $(qweb.render('altanmia_resource_booking.booking_submit', {
-                    booking_profile_id: appointmentTypeID,
+                    booking_profile_id: bookingProfileID,
                     slugified_name: slugifiedName,
-                    booking_dates: encodeURIComponent(JSON.stringify(appointments))
+                    booking_dates: encodeURIComponent(JSON.stringify(bookings))
                 }))
             );
         }
@@ -315,7 +312,7 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
             }
             const repeatInterval = parseInt($('.input_repeat_every').val())
             const repeatType = $('.repeat_until').find(":selected").text();
-            const appointmentTypeID = $("input[name='book_profile_id']").val();
+            const bookingProfileID = $("input[name='book_profile_id']").val();
             await this._rpc({
                 model: 'tanmia.booking.book.profile',
                 method : 'get_max_recurrence_repeat',
@@ -323,7 +320,7 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
                             repeatDay,
                             repeatWeek,
                             repeatInterval,
-                            appointmentTypeID]
+                            bookingProfileID]
                 ],
             }).then((result) => {
                 console.log(result);
@@ -340,14 +337,14 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     },
 
     _getAvailableDays: async function(){
-        const appointmentTypeID = $("input[name='book_profile_id']").val();
-        const employeeID = $("#slots_form select[name='employee_id']").val();
+        const bookingProfileID = $("input[name='book_profile_id']").val();
+        const employeeID = $("#b_slots_form select[name='employee_id']").val();
         const timezone = $("input[name='timezone']").val();
         let availableDays = null;
         await this._rpc({
                 model: 'tanmia.booking.book.profile',
                 method : 'get_available_days',
-                args: [[], [timezone, employeeID, appointmentTypeID]],
+                args: [[], [timezone, employeeID, bookingProfileID]],
         }).then((result) => {
             availableDays = result;
         });
@@ -360,14 +357,14 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     },
 
     _getAvailableHours: async function(day){
-        const appointmentTypeID = $("input[name='book_profile_id']").val();
-        const employeeID = $("#slots_form select[name='employee_id']").val();
+        const bookingProfileID = $("input[name='book_profile_id']").val();
+        const employeeID = $("#b_slots_form select[name='employee_id']").val();
         const timezone = $("input[name='timezone']").val();
         let availableHours = null;
         await this._rpc({
                 model: 'tanmia.booking.book.profile',
                 method : 'get_available_hours',
-                args: [[], [timezone, employeeID, appointmentTypeID, day]],
+                args: [[], [timezone, employeeID, bookingProfileID, day]],
         }).then((result) => {
             availableHours = result;
         });
@@ -380,17 +377,17 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     },
 
     _onTimeClick: function (ev) {
-        if (this.$("#slots_availabilities")[0]) {
+        if (this.$("#b_slots_availabilities")[0]) {
             clicks++;
-            if (clicks <= numberOfAppointments){
+            if (clicks <= numberOfBookings){
                 const timeSelected = this.$(ev.currentTarget).text();
-                const appointmentTypeID = $("input[name='book_profile_id']").val();
-                const appointmentTypeIDs = $("input[name='filter_book_profile_ids']").val();
-                var slots = JSON.parse($('.o_slot_selected').find('div')[0].dataset['availableSlots']);
+                const bookingProfileID = $("input[name='book_profile_id']").val();
+                const bookingProfileIDs = $("input[name='filter_book_profile_ids']").val();
+                var slots = JSON.parse($('.b_slot_selected').find('div')[0].dataset['bavailableSlots']);
 
                 $.each(slots , function(index, value) {
                     if (value['hours'] === timeSelected){
-                        appointments.push(value);
+                        bookings.push(value);
                         return false;
                     }
                 });
@@ -399,107 +396,62 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
                     slots = selectedDaysSlots[slotDate]
                 }
 
-                slots = slots.filter(e1 => !appointments.find(e2 => (e1.hours === e2.hours && e1.datetime === e2.datetime)));
+                slots = slots.filter(e1 => !bookings.find(e2 => (e1.hours === e2.hours && e1.datetime === e2.datetime)));
                 selectedDaysSlots[slotDate] = slots
 
-                this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
+                this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
             }
-            if (clicks === numberOfAppointments){
-                this.$('#slotsList').empty();
-                const appointmentTypeID = this.$("input[name='book_profile_id']").val();
-                const appointmentType = document.getElementsByClassName('o_page_header')[0].innerText;
-                const slugifiedName = appointmentType.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+            if (clicks === numberOfBookings){
+                this.$('#bSlotsList').empty();
+                const bookingProfileID = this.$("input[name='book_profile_id']").val();
+                const bookingProfile = document.getElementsByClassName('b_page_header')[0].innerText;
+                const slugifiedName = bookingProfile.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
 
                 //Replace the slots list by submit button
-                let $slotsList = this.$('#slotsList').empty();
+                let $bSlotsList = this.$('#bSlotsList').empty();
                 $(qweb.render('altanmia_resource_booking.booking_submit', {
-                    booking_profile_id: appointmentTypeID,
+                    booking_profile_id: bookingProfileID,
                     slugified_name: slugifiedName,
-                    booking_dates: encodeURIComponent(JSON.stringify(appointments))
-                })).appendTo($slotsList);
+                    booking_dates: encodeURIComponent(JSON.stringify(bookings))
+                })).appendTo($bSlotsList);
             }
         }
     },
 
     _onClickDaySlot: function (ev) {
-        if (clicks < numberOfAppointments){
-            this.$('.o_slot_selected').removeClass('o_slot_selected');
-            this.$(ev.currentTarget).addClass('o_slot_selected');
+        if (clicks < numberOfBookings){
+            this.$('.b_slot_selected').removeClass('b_slot_selected');
+            this.$(ev.currentTarget).addClass('b_slot_selected');
 
-            const appointmentTypeID = this.$("input[name='book_profile_id']").val();
-            const appointmentTypeIDs = this.$("input[name='filter_book_profile_ids']").val();
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const bookingProfileIDs = this.$("input[name='filter_book_profile_ids']").val();
             slotDate = this.$(ev.currentTarget.firstElementChild).attr('id');
             
             var slots = []
-            if (typeof this.$(ev.currentTarget).find('div')[0].dataset['availableSlots'] !== 'undefined'){
-                slots = JSON.parse(this.$(ev.currentTarget).find('div')[0].dataset['availableSlots']);
+            if (typeof this.$(ev.currentTarget).find('div')[0].dataset['bavailableSlots'] !== 'undefined'){
+                slots = JSON.parse(this.$(ev.currentTarget).find('div')[0].dataset['bavailableSlots']);
             }
 
             if (slotDate in selectedDaysSlots){
                 slots = selectedDaysSlots[slotDate];
             }
 
-            this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
+            this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
         }
     },
 
     _onNumberClick: function(ev){
         clicks = 0;
-        appointments = [];
+        bookings = [];
         selectedDaysSlots = {};
-        numberOfAppointments = parseInt(this.$(ev.currentTarget).text());
+        numberOfBookings = parseInt(this.$(ev.currentTarget).text());
 
         // CHECK IF ANY DAY IS SELECTED
-        if ($('.o_slot_selected')[0]){
-            const appointmentTypeID = this.$("input[name='appointment_type_id']").val();
-            const appointmentTypeIDs = this.$("input[name='filter_appointment_type_ids']").val();
-            var slots = JSON.parse(this.$('.o_slot_selected').find('div')[0].dataset['availableSlots']);
-            this._renderSlots(slots, appointmentTypeID, appointmentTypeIDs);
-        }
-    },
-
-    _onTypeClick: async function(ev){
-        const typeOfAppointment = this.$(ev.currentTarget).text();
-        let $typeSelection = this.$('.o_appointment_type_select');
-        appointments = []
-        var selectedDaysSlots = {};
-        var slotDate = null;
-
-        if (typeOfAppointment === 'Regular Appointment'){
-            const result = await this._getCalendarInfo();
-            const calendar = result[0];
-            const formatedDays = result[1];
-            const timezone = this.$("input[name='timezone']").val();
-            if (calendar){
-                if ($('.appointments_recurrence_form').length){
-                    $('.appointments_recurrence_form').replaceWith(
-                        $(qweb.render('tanmya_appointments.appointments_calendar', {
-                            slots: calendar,
-                            formated_days: formatedDays,
-                            timezone: timezone
-                        }))
-                    );
-                }
-                else if($('#slots_availabilities').length){
-                    return;
-                }
-                else {
-                    $(qweb.render('tanmya_appointments.appointments_calendar', {
-                        slots: calendar,
-                        formated_days: formatedDays,
-                        timezone: timezone
-                    })).insertAfter($typeSelection);
-                }
-            }
-        }
-        else if (typeOfAppointment === 'Recurring Appointment'){
-            if($('#slots_availabilities').length){
-                $('#slots_availabilities').remove();
-            }
-            else if ($('.appointments_recurrence_form').length){
-                return;
-            }
-            this._renderRecurringForm();
+        if ($('.b_slot_selected')[0]){
+            const bookingProfileID = this.$("input[name='book_profile_id']").val();
+            const bookingProfileIDs = this.$("input[name='filter_book_profile_ids']").val();
+            var slots = JSON.parse(this.$('.b_slot_selected').find('div')[0].dataset['bavailableSlots']);
+            this._renderSlots(slots, bookingProfileID, bookingProfileIDs);
         }
     },
 
@@ -527,12 +479,12 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
     },
 
     _setMaxScheduleDate: async function(){
-        const appointmentTypeID = $("input[name='book_profile_id']").val();
+        const bookingProfileID = $("input[name='book_profile_id']").val();
         var maxScheduleDays = 0;
         await this._rpc({
         model: 'tanmia.booking.book.profile',
         method : 'get_max_schedule_days',
-        args: [[], [appointmentTypeID]],
+        args: [[], [bookingProfileID]],
         }).then((result) => {
             maxScheduleDays = result;
         });
@@ -575,14 +527,14 @@ publicWidget.registry.bookingSlotSelect = publicWidget.Widget.extend({
         }
     },
 
-    _renderSlots: function(slots, appointmentTypeID, appointmentTypeIDs){
-        let $slotsList = this.$('#slotsList').empty();
+    _renderSlots: function(slots, bookingProfileID, bookingProfileIDs){
+        let $bSlotsList = this.$('#bSlotsList').empty();
         $(qweb.render('altanmia_resource_booking.slots_list', {
             slotDate: moment(slotDate).format("dddd D MMMM"),
             slots: slots,
-            book_profile_id: appointmentTypeID,
-            filter_book_profile_ids: appointmentTypeIDs,
-        })).appendTo($slotsList);
+            book_profile_id: bookingProfileID,
+            filter_book_profile_ids: bookingProfileIDs,
+        })).appendTo($bSlotsList);
     }
 });
 });

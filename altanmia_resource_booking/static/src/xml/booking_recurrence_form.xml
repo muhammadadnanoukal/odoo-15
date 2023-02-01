@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <templates xml:space="preserve">
 	<t t-name="altanmia_resource_booking.repeat_every">
-        <div style="width: 100%;" class="appointments_recurrence_form">
+        <div style="width: 100%;" class="bookings_recurrence_form">
         <div class="repeat_every">
             <div style="width: 100%;" class="d-flex justify-content-around">
                 <label class="text-nowrap align-self-center col-3"><strong>Repeat Every</strong></label>

@@ -73,8 +73,8 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="row d-flex o_appointment_kanban_boxes">
-                                    <div class="o_appointment_kanban_box o_kanban_primary_bottom bottom_block d-flex position-relative justify-content-center px-0">
+                                <div class="row d-flex b_booking_kanban_boxes">
+                                    <div class="b_booking_kanban_box o_kanban_primary_bottom bottom_block d-flex position-relative justify-content-center px-0">
                                         <div class="col-6"/>
                                         <div class="col-6">
                                             <button class="btn btn-link btn-sm py-0 fa fa-lg fa-link"

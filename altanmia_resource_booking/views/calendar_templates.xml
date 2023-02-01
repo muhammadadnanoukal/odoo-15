@@ -5,9 +5,9 @@
     <template id="booking_profiles_list_layout" name="Booking Profiles List Layout">
         <t t-set="no_breadcrumbs" t-value="True"/>
         <t t-call="portal.portal_layout">
-            <div id="wrap" class="o_appointment_index">
-                <div class="oe_structure container o_appointment_choice">
-                    <h1 class="o_page_header mt32">
+            <div id="wrap" class="b_booking_index">
+                <div class="oe_structure container b_booking_choice">
+                    <h1 class="b_page_header mt32">
                         Schedule a Booking
                     </h1>
                     <div t-if="message == 'cancel'" class="alert alert-danger mt16" role="alert">
@@ -25,12 +25,12 @@
                         </div>
                     </div>
                     <div t-else="" class="pr-0">
-                        <form class="form o_website_appointment_form"
+                        <form class="form b_website_booking_form"
                               t-attf-action="/booking/#{ slug(booking_profiles[0]) }/profile?#{keep_query('filter_book_profile_ids')}"
                               method="POST">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <t t-call="altanmia_resource_booking.booking_profile_select"/>
-                            <div t-out="booking_profiles[0].message_intro" class="o_calendar_intro my-2"/>
+                            <div t-out="booking_profiles[0].message_intro" class="b_calendar_intro my-2"/>
                             <div class="form-group row col">
                                 <div class="mx-auto">
                                     <button type="submit" class="btn btn-primary">View Availabilities
@@ -48,9 +48,9 @@
 
     <template id="booking_profile_select" name="Website Booking: Booking Select Form Input">
         <div id="booking_profile_select" class="form-group row col">
-            <label for="calendarType" class="col-form-label">Appointment Type</label>
-            <div t-att-class="'col-lg-9 col-md-7 ml-auto pl-0 ' + (len(booking_profiles) == 1 and 'o_appointment_selection' or '')">
-                <select name="book_profile_id" class="form-control" id="calendarType"
+            <label for="bookingProfile" class="col-form-label">Booking profile</label>
+            <div t-att-class="'col-lg-9 col-md-7 ml-auto pl-0 ' + (len(booking_profiles) == 1 and 'o_booking_selection' or '')">
+                <select name="book_profile_id" class="form-control" id="bookingProfile"
                         t-att-disabled="len(booking_profiles)==1 and '1' or None">
                     <t t-foreach="booking_profiles" t-as="book">
                         <option t-att-value="book.id" t-att-selected="book.id == booking_profiles[0].id and 'selected'">
@@ -67,16 +67,16 @@
         <t t-set="no_breadcrumbs" t-value="True"/>
         <t t-call="portal.portal_layout">
             <div id="wrap" class="d-flex bg-o-color-4 px-3 mt-3">
-                <div class="appointment_portal_alert">
+                <div class="booking_portal_alert">
                     <t t-set="o_portal_fullwidth_alert" groups="altanmia_resource_booking.group_calendar_manager">
                         <t t-call="portal.portal_back_in_edit_mode">
                             <t t-set="backend_url"
                                t-value="'/web#id=%s&amp;view_type=form&amp;model=%s' % (booking_profile.id, booking_profile._name)"/>
-                            <t t-set="custom_html">This is a preview of the customer appointment form.</t>
+                            <t t-set="custom_html">This is a preview of the customer booking form.</t>
                         </t>
                     </t>
                 </div>
-                <div class="container mb64 o_appointment">
+                <div class="container mb64 b_booking">
                     <ul class="wizard mt32 float-right d-none d-md-block">
                         <li class="text-primary">Time
                             <span class="chevron"></span>
@@ -88,7 +88,7 @@
                             <span class="chevron"></span>
                         </li>
                     </ul>
-                    <h1 class="o_page_header mt32">
+                    <h1 class="b_page_header mt32">
                         <t t-out="booking_profile.name"/>
                     </h1>
                     <div t-if="state == 'failed-employee'" class="alert alert-danger mt16" role="alert">
@@ -133,12 +133,12 @@
                     <div t-if="state == 'cancel'" class="alert alert-danger mt16" role="alert">
                         <p class="mb-0">
                             <strong>Booking canceled!</strong>
-                            You can schedule another appointment from here.
+                            You can schedule another booking from here.
                         </p>
                     </div>
-                    <div t-if="state == 'appointment_failed'" class="alert alert-danger mt16" role="alert">
+                    <div t-if="state == 'booking_failed'" class="alert alert-danger mt16" role="alert">
                         <p>
-                            <strong>Appointment failed!</strong>
+                            <strong>Booking failed!</strong>
                             The selected timeslot is not available anymore.
                             Someone has booked the same time slot a few
                             seconds before you.
@@ -147,9 +147,9 @@
                             Please, select another date.
                         </p>
                     </div>
-                    <div t-if="state == 'appointment_unavailable'" class="alert alert-danger mt16" role="alert">
+                    <div t-if="state == 'booking_unavailable'" class="alert alert-danger mt16" role="alert">
                         <p>
-                            <strong>Appointment failed!</strong>
+                            <strong>Booking failed!</strong>
                             The selected timeslot is not available.
                             It appears you already have another meeting with us at that date.
                         </p>
@@ -160,7 +160,7 @@
 
                     <div class="clearfix"/>
                     <div class="col pr-0">
-                        <form id="slots_form" class="form o_appointment o_website_appointment_form">
+                        <form id="b_slots_form" class="form b_booking b_website_booking_form">
                             <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
                             <input type="hidden" name="book_profile_id" t-att-value="booking_profile.id"/>
                             <input type="hidden" name="filter_book_profile_ids" t-att-value="filter_book_profile_ids"/>
@@ -179,8 +179,8 @@
                             <span t-field="booking_profile.location"/>
                         </div>
                     </div>
-                    <div t-field="booking_profile.message_intro" class="o_calendar_intro mb32"/>
-                    <div class="col-3 p-1 o_booking_profile_select">
+                    <div t-field="booking_profile.message_intro" class="b_calendar_intro mb32"/>
+                    <div class="col-3 p-1 b_booking_profile_select">
                         <input type="hidden" name="timezone" t-att-value="request.session['timezone']"/>
                     </div>
                     <t t-call="altanmia_resource_booking.calendar"/>
@@ -193,7 +193,7 @@
     <template id="resource_select" name="Website Appointment: Appointment Calendars">
         <div name="employee_select" t-att-class="'form-group row ' + ('o_hidden' if not suggested_resources else '')">
             <label for="selectEmployee" class="col-form-label">With</label>
-            <div t-att-class="'col-lg-9 col-md-7 ml-auto pl-0 ' + (len(suggested_resources) == 1 and 'o_appointment_selection' or '')">
+            <div t-att-class="'col-lg-9 col-md-7 ml-auto pl-0 ' + (len(suggested_resources) == 1 and 'o_booking_selection' or '')">
                 <select class="form-control" name="employee_id" id="selectEmployee"
                         t-att-disabled="len(suggested_resources) == 1 and '1' or None">
                     <t t-foreach="suggested_resources" t-as="emp">
@@ -208,27 +208,21 @@
     </template>
 
     <template id="calendar" name="Online Booking">
-        <div id="slots_availabilities" class="d-lg-flex mt-3">
-<!--            <t t-if="multi">-->
-
-<!--            </t>-->
-<!--            <t t-if="recurrent">-->
-<!--                <t t-call="altanmia_resource_booking.recurrent_control"/>-->
-<!--            </t>-->
+        <div id="b_slots_availabilities" class="d-lg-flex mt-3">
             <div id="calendar" class="col-lg-8 px-0">
                 <t t-call="altanmia_resource_booking.multi_control"/>
                 <div t-foreach="slots" t-as="month"
                      t-attf-id="month-#{month['id']}"
-                     t-attf-class="o_appointment_month px-1 px-md-3 #{'d-none' if month['id'] > 0 else ''}">
+                     t-attf-class="b_booking_month px-1 px-md-3 #{'d-none' if month['id'] > 0 else ''}">
                     <div id="calendarHeader" class="d-inline-flex align-items-baseline container-fluid">
                         <button t-if="month['id'] > 0" type="button" id="prevCal"
-                                t-attf-class="btn btn-primary o_js_calendar_navigate">
+                                t-attf-class="btn btn-primary b_js_calendar_navigate">
                             <i class="fa fa-arrow-left"/>
                         </button>
                         <div t-else="" class="btn disabled fa fa-arrow-left mr-1 text-white"/>
                         <h3 t-out="month['month']" class="col text-center"/>
                         <button t-if="len(slots) > month['id'] + 1" type="button" id="nextCal"
-                                t-attf-class="btn btn-primary o_js_calendar_navigate ml-1">
+                                t-attf-class="btn btn-primary b_js_calendar_navigate ml-1">
                             <i class="fa fa-arrow-right"/>
                         </button>
                         <div t-else="" class="btn disabled fa fa-arrow-right ml-1 text-white"/>
@@ -240,14 +234,14 @@
                                 <th class="text-center p-md-2 p-1 align-middle" t-out="day"/>
                             </t>
                         </tr>
-                        <tr t-foreach="month['weeks']" t-as="weeks" class="o_appointment_days">
+                        <tr t-foreach="month['weeks']" t-as="weeks" class="b_booking_days">
                             <t t-foreach="weeks" t-as="day">
                                 <td t-attf-class="align-middle p-md-2 p-1 text-center#{day['slots'] and ' o_day' or ''} #{day['weekend_cls']} #{day['today_cls']}"
                                     t-attf-title="#{day['today_cls'] and 'Today' or ''}">
                                     <t t-if="len(day['slots']) &gt; 2">
-                                        <div t-att-id="str(day['day'])+month['month']"
+                                        <div t-att-id="str(day['day'])"
                                              class="o_slot_button mx-auto w-50" t-out="day['day'].day"
-                                             t-att-data-available-slots="json.dumps(day['slots'])"/>
+                                             t-att-data-bavailable-slots="json.dumps(day['slots'])"/>
                                     </t>
                                     <t t-if="len(day['slots']) &lt; 3">
                                         <div t-out="day['day'].day"
@@ -265,11 +259,11 @@
                     </span>
                 </div>
             </div>
-            <div id="slotsList" class="o_appointment_availabilities col-lg-4"/>
+            <div id="bSlotsList" class="b_booking_availabilities col-lg-4"/>
         </div>
     </template>
 
-    <template id="appointment_select_timezone"
+    <template id="booking_select_timezone"
               inherit_id="altanmia_resource_booking.calendar"
               active="False"
               customize_show="True"
@@ -282,7 +276,7 @@
                     </label>
                     <div class="mx-2">
                         <select class="form-control" name="timezone">
-                            <t t-foreach="appointment_type._fields['appointment_tz'].selection(appointment_type)"
+                            <t t-foreach="booking_profile._fields['appointment_tz'].selection(appointment_type)"
                                t-as="timezone">
                                 <option t-att-value="timezone[0]" t-out="timezone[1]"
                                         t-att-selected="(timezone[1] == request.session.timezone) and 1 or None"/>

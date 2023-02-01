@@ -31,10 +31,10 @@
         }
     }
 
-    .o_appointment_kanban_boxes {
+    .b_booking_kanban_boxes {
         flex-flow: row nowrap;
 
-        .o_appointment_kanban_box {
+        .b_booking_kanban_box {
             flex: 1 1 auto;
             flex-flow: row nowrap;
             &:first-child {
