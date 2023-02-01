@@ -16,8 +16,8 @@
                  name="module_website_resource_booking"
                  t-att-data-module-id="mod.id"
                  t-att-data-module-shortdesc="mod.shortdesc"
-                 class="col-md-4 mb8 o_new_content_element">
-                <a href="#" data-action="new_appointment">
+                 class="col-md-4 mb8 b_new_content_element">
+                <a href="#" data-action="new_booking">
                     <i class="fa fa-calendar"/>
                     <p>Booking Form</p>
                 </a>

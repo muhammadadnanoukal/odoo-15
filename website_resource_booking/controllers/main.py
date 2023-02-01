@@ -23,7 +23,7 @@ class WebsiteBooking(Booking):
 
         :param page: the page number displayed when the appointments are organized by cards
 
-        A param filter_appointment_type_ids can be passed to display a define selection of appointments types.
+        A param filter_booking_profile_ids can be passed to display a define selection of appointments types.
         This param is propagated through templates to allow people to go back with the initial appointment
         types filter selection
         """
@@ -43,7 +43,7 @@ class WebsiteBooking(Booking):
         """
             Compute specific data for the cards layout like the the search bar and the pager.
         """
-        domain = self._booking_base_domain(kwargs.get('filter_appointment_type_ids'))
+        domain = self._booking_base_domain(kwargs.get('filter_booking_profile_ids'))
 
         booking = request.env['tanmia.booking.book.profile']
         website = request.website
@@ -64,7 +64,7 @@ class WebsiteBooking(Booking):
         )
 
         booking_profiles = booking.search(domain, limit=APPOINTMENTS_PER_PAGE, offset=pager['offset'])
-        keep = QueryURL('/booking', search=kwargs.get('search'), filter_appointment_type_ids=kwargs.get('filter_appointment_type_ids'))
+        keep = QueryURL('/booking', search=kwargs.get('search'), filter_booking_profile_ids=kwargs.get('filter_booking_profile_ids'))
 
         return {
             'booking_profiles': booking_profiles,

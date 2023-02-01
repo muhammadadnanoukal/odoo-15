@@ -15,7 +15,7 @@
                     <span>Published</span>
                 </div>
             </xpath>
-            <xpath expr="//div[hasclass('o_appointment_kanban_box')]/div[1]" position="inside">
+            <xpath expr="//div[hasclass('b_booking_kanban_box')]/div[1]" position="inside">
                 <span>
                     <a t-attf-href="#{record.website_url.raw_value}" class="mr-2">Published</a>
                     <field name="is_published" widget='boolean_toggle'/>

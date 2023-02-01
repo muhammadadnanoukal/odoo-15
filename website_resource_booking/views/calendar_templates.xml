@@ -5,7 +5,7 @@
     <template id="booking_profiles_list_layout"
               name="Online Booking: Booking List Layout"
               inherit_id="altanmia_resource_booking.booking_profiles_list_layout">
-        <xpath expr="//div[hasclass('o_appointment_choice')]" position="before">
+        <xpath expr="//div[hasclass('b_booking_choice')]" position="before">
             <t t-call="website_resource_booking.website_calendar_index"/>
         </xpath>
     </template>
@@ -18,10 +18,10 @@
         <xpath expr="//div[@id='wrap']" position="attributes">
             <attribute name="class" value=""/>
         </xpath>
-        <xpath expr="//div[hasclass('appointment_portal_alert')]" position="replace"/>
-        <xpath expr="//div[hasclass('o_appointment')]" position="before">
+        <xpath expr="//div[hasclass('booking_portal_alert')]" position="replace"/>
+        <xpath expr="//div[hasclass('b_booking')]" position="before">
             <nav t-if="booking_profile.category == 'website'" class="navbar navbar-light border-top shadow-sm d-print-none">
-                <div class="container o_appointment">
+                <div class="container b_booking">
                     <a t-attf-href="/booking?#{keep_query('filter_book_profile_ids')}" class="navbar-brand h4 my-0 mr-auto">
                         <i class="fa fa-long-arrow-left text-primary mr-2"/>All Booking Profiles
                     </a>
@@ -46,13 +46,13 @@
 
     <template id="booking_profile_cards_layout" name="Booking Cards Layout">
         <t t-call="website.layout">
-            <div id="wrap" class="o_appointment_index h-100">
+            <div id="wrap" class="b_booking_index h-100">
                 <t t-call="website_resource_booking.website_calendar_index"/>
                 <t t-call="website_resource_booking.website_calendar_index_topbar"/>
                 <div class="oe_structure"/>
-                <div class="o_appointment_appointments_list opt_appointments_list_cards_bg h-100">
+                <div class="o_booking_profiles_list opt_bookings_list_cards_bg h-100">
                     <div class="container">
-                        <div id="o_appointment_index_main_col" class="col-md pt-5 appointments_list_columns">
+                        <div id="o_booking_index_main_col" class="col-md pt-5 bookings_list_columns">
                             <div class="row">
                                 <t t-call="website_resource_booking.booking_cards"/>
                             </div>
@@ -111,7 +111,7 @@
         </t>
         <div t-foreach="booking_profiles" t-as="profile" class="col-md-6 col-lg-4 mb-4">
             <article class="h-100 card border-0 shadow-sm" itemscope="itemscope" itemtype="http://schema.org/Appointments">
-                <a t-attf-href="/booking/#{ slug(profile) }/profile?#{keep_query('filter_appointment_type_ids')}"
+                <a t-attf-href="/booking/#{ slug(profile) }/profile?#{keep_query('filter_booking_profile_ids')}"
                     class="text-reset text-decoration-none h-100">
                     <div class="h-100 no-gutters">
                         <header class="overflow-hidden bg-secondary col-12 rounded-top">
@@ -119,7 +119,7 @@
                                 <t t-call="website.record_cover">
                                     <t t-set="_record" t-value="profile"/>
                                     <small t-if="not profile.website_published"
-                                           class="o_appointment_unpublished bg-danger position-absolute w-100 text-right">
+                                           class="b_booking_unpublished bg-danger position-absolute w-100 text-right">
                                         <i class="fa fa-ban mr-2"/>Unpublished
                                     </small>
                                 </t>

@@ -9,7 +9,7 @@ var _t = core._t;
 
 WebsiteNewMenu.include({
     actions: _.extend({}, WebsiteNewMenu.prototype.actions || {}, {
-        new_appointment: '_createNewAppointment',
+        new_booking: '_createNewBooking',
     }),
 
     //--------------------------------------------------------------------------
@@ -23,7 +23,7 @@ WebsiteNewMenu.include({
      * @private
      * @returns {Promise} Unresolved if there is a redirection
      */
-    _createNewAppointment: function () {
+    _createNewBooking: function () {
         var self = this;
         return wUtils.prompt({
             window_title: _t("New Appointment Type"),
