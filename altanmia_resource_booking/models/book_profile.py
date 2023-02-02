@@ -120,7 +120,7 @@ class BookProfile(models.Model):
         ('random', 'Random'),
         ('chosen', 'Chosen by the Customer')], string='Assignment Method', default='random',
         help="How employees will be assigned to meetings customers book on your website.")
-    appointment_count = fields.Integer('# Appointments', compute='_compute_appointment_count')
+    booking_count = fields.Integer('# Appointments', compute='_compute_booking_count')
 
     require_payment = fields.Selection([('online', 'Online Payment'), ('cash', 'Cash')],
         help='Request an online payment to or after booking hold in cash.')
@@ -141,9 +141,7 @@ class BookProfile(models.Model):
             if book.parent_booking_id:
                 book.available_places_ids = self.env['account.asset'].sudo().search([
                         ('reservable', '=', True), ('parent', 'in', book.parent_booking_id.places_ids.ids)])
-                print("parent exist", book.available_places_ids,  book.parent_booking_id.places_ids.ids)
             else:
-                print("parent not")
                 book.available_places_ids = self.env['account.asset'].sudo().search([
                     ('reservable', '=', True)])
 
@@ -154,21 +152,21 @@ class BookProfile(models.Model):
             cap += place.capacity
         self.capacity = cap
 
-    def _compute_appointment_count(self):
+    def _compute_booking_count(self):
         meeting_data = self.env['calendar.event'].read_group([('book_profile_id', 'in', self.ids)], ['book_profile_id'], ['book_profile_id'])
         mapped_data = {m['book_profile_id'][0]: m['book_profile_id_count'] for m in meeting_data}
-        for appointment_type in self:
-            appointment_type.appointment_count = mapped_data.get(appointment_type.id, 0)
+        for booking_profile in self:
+            booking_profile.booking_count = mapped_data.get(booking_profile.id, 0)
 
     @api.constrains('category', 'employee_ids')
     def _check_employee_configuration(self):
-        for appointment_type in self:
-            if appointment_type.category != 'website' and len(appointment_type.employee_ids) != 1:
-                raise ValidationError(_("This category of appointment type should only have one employee but got %s employees", len(appointment_type.employee_ids)))
-            if appointment_type.category == 'work_hours':
-                appointment_domain = [('category', '=', 'work_hours'), ('employee_ids', 'in', appointment_type.employee_ids.ids)]
-                if appointment_type.ids:
-                    appointment_domain = AND([appointment_domain, [('id', 'not in', appointment_type.ids)]])
+        for booking_profile in self:
+            if booking_profile.category != 'website' and len(booking_profile.employee_ids) != 1:
+                raise ValidationError(_("This category of appointment type should only have one employee but got %s employees", len(booking_profile.employee_ids)))
+            if booking_profile.category == 'work_hours':
+                appointment_domain = [('category', '=', 'work_hours'), ('employee_ids', 'in', booking_profile.employee_ids.ids)]
+                if booking_profile.ids:
+                    appointment_domain = AND([appointment_domain, [('id', 'not in', booking_profile.ids)]])
                 if self.search_count(appointment_domain) > 0:
                     raise ValidationError(_("Only one work hours appointment type is allowed for a specific employee."))
 
@@ -187,18 +185,18 @@ class BookProfile(models.Model):
     def action_calendar_meetings(self):
         self.ensure_one()
         action = self.env["ir.actions.actions"]._for_xml_id("calendar.action_calendar_event")
-        appointments = self.env['calendar.event'].search([
+        bookings = self.env['calendar.event'].search([
             ('book_profile_id', '=', self.id), ('start', '>=', datetime.today()
         )], order='start')
-        nbr_appointments_week_later = self.env['calendar.event'].search_count([
+        nbr_bookings_week_later = self.env['calendar.event'].search_count([
             ('book_profile_id', '=', self.id), ('start', '>=', datetime.today() + timedelta(weeks=1))
         ])
 
         action['context'] = {
             'default_book_profile_id': self.id,
             'search_default_book_profile_id': self.id,
-            'default_mode': "month" if nbr_appointments_week_later else "week",
-            'initial_date': appointments[0].start if appointments else datetime.today(),
+            'default_mode': "month" if nbr_bookings_week_later else "week",
+            'initial_date': bookings[0].start if bookings else datetime.today(),
         }
         return action
 
@@ -289,6 +287,7 @@ class BookProfile(models.Model):
             local_start = appt_tz.localize(datetime.combine(day, time(hour=int(slot.start_hour), minute=int(round((slot.start_hour % 1) * 60)))))
             local_end = appt_tz.localize(
                 datetime.combine(day, time(hour=int(slot.start_hour), minute=int(round((slot.start_hour % 1) * 60)))) + relativedelta(hours=self.appointment_duration))
+
             while (local_start.hour + local_start.minute / 60) <= slot.end_hour - self.appointment_duration:
                 slots.append({
                     self.appointment_tz: (
@@ -319,12 +318,16 @@ class BookProfile(models.Model):
                 if slot.end_hour > first_day.hour + first_day.minute / 60.0:
                     append_slot(first_day.date(), slot)
             slot_weekday = [int(weekday) - 1 for weekday in self.slot_ids.mapped('weekday')]
+
             for day in rrule(DAILY,
                                 dtstart=first_day.date() + timedelta(days=1),
                                 until=last_day.date(),
                                 byweekday=slot_weekday):
+
                 for slot in self.slot_ids.filtered(lambda x: int(x.weekday) == day.isoweekday()):
+
                     append_slot(day, slot)
+
         else:
             # Custom appointment type, we use "unique" slots here that have a defined start/end datetime
             unique_slots = self.slot_ids.filtered(lambda slot: slot.slot_type == 'unique' and slot.end_datetime > reference_date)
@@ -645,6 +648,7 @@ class BookProfile(models.Model):
         first_day = requested_tz.fromutc(reference_date + relativedelta(hours=self.min_schedule_hours))
         appointment_duration_days = self.max_schedule_days
         unique_slots = self.slot_ids.filtered(lambda slot: slot.slot_type == 'unique')
+
         if self.category == 'custom' and unique_slots:
             appointment_duration_days = (unique_slots[-1].end_datetime - reference_date).days
         last_day = requested_tz.fromutc(reference_date + relativedelta(days=appointment_duration_days))
@@ -656,6 +660,8 @@ class BookProfile(models.Model):
             timezone,
             reference_date=reference_date
         )
+
+
         if self.resource_type == 'person':
             if not employee or employee in self.employee_ids:
                 self._slots_available(slots, first_day.astimezone(pytz.UTC), last_day.astimezone(pytz.UTC), employee)
@@ -728,10 +734,10 @@ class BookProfile(models.Model):
         timezone = args[0][0]
         employee_id = args[0][1]
 
-        appointment_type_id = args[0][2]
-        appointment_type = self.env['tanmia.booking.book.profile'].browse(int(appointment_type_id))
-        employee = self.env['hr.employee'].browse(int(employee_id)) if appointment_type.resource_type == 'person' else self.env['account.asset'].sudo().browse(int(employee_id))
-        slots = appointment_type._get_booking_slots(timezone, employee, None)
+        booking_profile_id = args[0][2]
+        booking_profile = self.env['tanmia.booking.book.profile'].browse(int(booking_profile_id))
+        employee = self.env['hr.employee'].browse(int(employee_id)) if booking_profile.resource_type == 'person' else self.env['account.asset'].sudo().browse(int(employee_id))
+        slots = booking_profile._get_booking_slots(timezone, employee, None)
         available_days = []
         for month in slots:
             for week in month['weeks']:
@@ -743,11 +749,11 @@ class BookProfile(models.Model):
     def get_available_hours(self, *args, **kwargs):
         timezone = args[0][0]
         employee_id = args[0][1]
-        appointment_type_id = args[0][2]
+        booking_profile_id = args[0][2]
         _day = args[0][3]
-        appointment_type = self.env['tanmia.booking.book.profile'].browse(int(appointment_type_id))
-        employee = self.env['hr.employee'].browse(int(employee_id)) if appointment_type.resource_type == 'person' else self.env['account.asset'].sudo().browse(int(employee_id))
-        slots = appointment_type._get_booking_slots(timezone, employee, None)
+        booking_profile = self.env['tanmia.booking.book.profile'].browse(int(booking_profile_id))
+        employee = self.env['hr.employee'].browse(int(employee_id)) if booking_profile.resource_type == 'person' else self.env['account.asset'].sudo().browse(int(employee_id))
+        slots = booking_profile._get_booking_slots(timezone, employee, None)
         available_hours = []
         for month in slots:
             for week in month['weeks']:
@@ -763,9 +769,9 @@ class BookProfile(models.Model):
         repeat_week = WEEKS.get(args[0][2]) if args[0][2] != -1 else False
         repeat_day = repeat_day(repeat_week) if repeat_week != False else repeat_day
         repeat_interval = int(args[0][3])
-        appointment_type_id = args[0][4]
-        appointment_type = self.env['tanmia.booking.book.profile'].browse(int(appointment_type_id))
-        max_schedule_days = appointment_type.max_schedule_days
+        booking_profile_id = args[0][4]
+        booking_profile = self.env['tanmia.booking.book.profile'].browse(int(booking_profile_id))
+        max_schedule_days = booking_profile.max_schedule_days
         tomorrow = date.today() + relativedelta(days=1)
         upper_bound_date = (date.today() + relativedelta(days=max_schedule_days))
         date_start = tomorrow
@@ -787,9 +793,9 @@ class BookProfile(models.Model):
         repeat_interval = int(args[0][3])
         repeat_until = args[0][4]
         repeat_hour = args[0][5]
-        appointment_type_id = args[0][6]
+        booking_profile_id = args[0][6]
         employee_id = args[0][7]
-        appointment_type = self.env['tanmia.booking.book.profile'].browse(int(appointment_type_id))
+        booking_profile = self.env['tanmia.booking.book.profile'].browse(int(booking_profile_id))
         tomorrow = date.today() + relativedelta(days=1)
         date_start = tomorrow
         dates = []
@@ -810,12 +816,12 @@ class BookProfile(models.Model):
              "employee_id": "{}".format(employee_id),
              "datetime": "{} {}:00".format(_date.strftime('%Y-%m-%d'), repeat_hour),
              "hours": "{}".format(repeat_hour),
-             "duration": "{}".format(appointment_type.appointment_duration)
+             "duration": "{}".format(booking_profile.appointment_duration)
             } for _date in dates
         ]
         return appointments
 
     def get_max_schedule_days(self, *args):
-        appointment_type_id = args[0][0]
-        appointment_type = self.env['tanmia.booking.book.profile'].browse(int(appointment_type_id))
-        return appointment_type.max_schedule_days
+        booking_profile_id = args[0][0]
+        booking_profile = self.env['tanmia.booking.book.profile'].browse(int(booking_profile_id))
+        return booking_profile.max_schedule_days

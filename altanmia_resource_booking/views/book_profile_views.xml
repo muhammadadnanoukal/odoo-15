@@ -62,7 +62,7 @@
                                     <div class="col-5">
                                         <button class="btn btn-primary mr-2" name="action_calendar_meetings"
                                                 type="object">
-                                            <field name="appointment_count"/>
+                                            <field name="booking_count"/>
                                             SCHEDULED
                                         </button>
                                     </div>
@@ -137,7 +137,7 @@
                         <button class="oe_stat_button" type="object"
                             name="action_calendar_meetings"
                             icon="fa-calendar">
-                            <field string="Appointments" name="appointment_count" widget="statinfo"/>
+                            <field string="Bookings" name="booking_count" widget="statinfo"/>
                         </button>
                         <button string="Customer Preview" class="oe_stat_button" type="object"
                                 name="action_customer_preview"

@@ -104,6 +104,8 @@ class Booking(http.Controller):
             - failed-employee: Error message displayed when the slot has been taken while doing the registration
             - failed-partner: Info message displayed when the partner has already an event in the time slot selected
         """
+
+
         book = book.sudo()
         request.session['timezone'] = timezone or book.appointment_tz
         try:
@@ -125,7 +127,9 @@ class Booking(http.Controller):
             suggested = request.env['hr.employee'].sudo().browse(int(employee_id))
 
         default_employee = suggested[0] if suggested else request.env['hr.employee']
+
         slots = book._get_booking_slots(request.session['timezone'], default_employee)
+
         formated_days = [
             format_date(fields.Date.from_string('2021-03-0%s' % str(day + 1)), "EEE", get_lang(request.env).code) for
             day in range(7)]

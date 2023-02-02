@@ -66,6 +66,14 @@ class Slot(models.Model):
             raise ValidationError(_(
                 "Atleast one slot duration is not enough to create a slot with the duration set in the appointment type"
             ))
+        if self.start_hour < 0 or self.end_hour < 0:
+            raise ValidationError(_(
+                "Start and end hour shouldn't be less than 00:00"
+            ))
+        if self.start_hour > 23.99 or self.end_hour > 23.99:
+            raise ValidationError(_(
+                "Start and end hour shouldn't be beggar than 23:59"
+            ))
 
     @api.constrains('slot_type', 'start_datetime', 'end_datetime')
     def _check_unique_slot_has_datetime(self):
