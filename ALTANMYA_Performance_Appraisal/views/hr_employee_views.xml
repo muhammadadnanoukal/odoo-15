@@ -16,6 +16,13 @@
                     </group>
                 </page>
             </xpath>
+            <xpath expr="//sheet[1]/group[1]/group[2]" position="replace">
+                <group>
+                    <field name="department_id" attrs="{'required': [('has_evaluation', '=', True)]}"/>
+                    <field name="parent_id" attrs="{'required': [('has_evaluation', '=', True)]}"/>
+                    <field name="coach_id"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>

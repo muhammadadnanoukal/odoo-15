@@ -2,6 +2,8 @@ from odoo import models, fields, api, _
 import datetime
 from datetime import timedelta
 
+from odoo.exceptions import UserError
+
 
 class EvaluationTemplate(models.Model):
     _name = 'evaluation.template'
@@ -257,11 +259,11 @@ class EvaluationTemplate(models.Model):
     @api.depends('scoring_system')
     def _compute_overall_rate(self):
         for rec in self:
-            for pair in rec.scoring_system.score_pair_ids:
-                if rec.overall_score <= pair.score:
+            pairs = sorted(rec.scoring_system.score_pair_ids, key=lambda l: l.score)
+            for pair in pairs:
+                if rec.overall_score == pair.score:
                     rec.overall_rate = pair.rate
                     return
-            rec.overall_rate = '---'
 
     section_ids = fields.One2many('evaluation.section', 'evaluation_template_id', store=True)
     overall_score = fields.Float(string='Overall Score', compute='_compute_overall_score', default=0.0)
@@ -365,6 +367,15 @@ class EvaluationTemplate(models.Model):
             ('hr_responsible', '!=', False)
         ])
 
+        employees_has_evaluation = self.env['hr.employee'].search([
+            ('has_evaluation', '=', True)])
+
+        if len(employees_has_evaluation) != len(employees_to_evaluate):
+            return '_', '_'
+
+        if len(employees_to_evaluate) == 0:
+            return None, None
+
         employees_to_evaluate_departments = employees_to_evaluate.mapped('department_id')
         concerned_departments_ids = []
         for department in employees_to_evaluate_departments:
@@ -397,6 +408,12 @@ class EvaluationTemplate(models.Model):
 
     def action_start_evaluation(self):
         employees_to_evaluate, direct_managers_and_departments_heads = self._reset_evaluators_groups()
+
+        if employees_to_evaluate is None and direct_managers_and_departments_heads is None:
+            raise UserError(_('There is not any employees to evaluate.'))
+
+        elif employees_to_evaluate is '_' and direct_managers_and_departments_heads is '_':
+            raise UserError(_('Please make sure that you have set all the configurations needed for the employees.\nDepartment, Manager and the Evaluation Configurations.'))
 
         for employee in employees_to_evaluate:
             evt = self.env['evaluation.template'].create({'employee_id': employee.id})

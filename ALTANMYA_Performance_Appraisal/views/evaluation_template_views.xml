@@ -129,6 +129,7 @@
                 </form>
             </field>
         </record>
+
         <record id='evaluation_template_view_tree' model='ir.ui.view'>
             <field name="name">evaluation.template.view.tree</field>
             <field name="model">evaluation.template</field>
@@ -185,6 +186,5 @@
         <menuitem id="menu_start_evaluation" name="Start Evaluation" action="start_evaluation_server_action"
                   groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators"
                   parent="menu_hr_employee_evaluation" sequence="1"/>
-
     </data>
 </odoo>

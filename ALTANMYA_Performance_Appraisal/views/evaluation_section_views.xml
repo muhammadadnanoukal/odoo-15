@@ -30,6 +30,7 @@
                                     <tree string="Section Criteria" create="0" delete="0" editable="bottom">
                                         <field name="section_type" invisible="1"/>
                                         <field name="is_user_creator" invisible="1"/>
+                                        <field name="score_pairs_ids" invisible="1"/>
                                         <field name="criterion_id"/>
                                         <field name="weight"/>
                                         <field name="score"/>

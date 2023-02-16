@@ -12,12 +12,13 @@ class EvaluationSectionLine(models.Model):
     def _onchange_criterion_id(self):
         return {'domain': {'score': [('id', 'in', self.section_id.evaluation_template_id.scoring_system.score_pair_ids.ids)]}}
 
-    score = fields.Many2one('evaluation.score.pair', string="Score")
+    score = fields.Many2one('evaluation.score.pair', string="Score", domain="[('id', 'in', score_pairs_ids)]")
     weight = fields.Float(string="Weight", related='criterion_id.weight')
     final_score = fields.Float(string="Item Score", compute="_compute_final_score", required=True)
     notes = fields.Html(string="Notes", required=False)
     section_id = fields.Many2one('evaluation.section', store=True)
     section_type = fields.Selection(related='section_id.section_type_id.type')
+    score_pairs_ids = fields.One2many(related='section_id.evaluation_template_id.scoring_system.score_pair_ids')
 
     is_user_creator = fields.Boolean(compute='_compute_is_user_creator', default=False)
 
