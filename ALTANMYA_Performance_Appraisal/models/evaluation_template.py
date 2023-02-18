@@ -106,7 +106,7 @@ class EvaluationTemplate(models.Model):
                                              string='Evaluation Template Type', store=True)
     scoring_system = fields.Many2one(related='evaluation_template_id.scoring_system', store=True)
     overall_rate = fields.Char(compute='_compute_overall_rate', store=True)
-    responsible_users_ids = fields.One2many('res.users', 'evaluation_template_id', store=True)
+    responsible_users_ids = fields.Many2many('res.users', 'evaluation_template_res_users_rel')
     hr_responsible = fields.Many2one('res.users', string='HR Responsible', related='employee_id.hr_responsible', store=True)
     hr_responsible_user_id = fields.Integer('HR Responsible ID', compute='_compute_hr_responsible_user_id', default=0)
     state = fields.Selection([
@@ -196,7 +196,6 @@ class EvaluationTemplate(models.Model):
             if not self.env['res.users'].browse(responsible_user).has_group('ALTANMYA_Performance_Appraisal.evaluation_group_specific_users'):
                 specific_users_group = self.env.ref('ALTANMYA_Performance_Appraisal.evaluation_group_specific_users')
                 specific_users_group.sudo().write({'users': [(4, responsible_user)]})
-
 
     def _prepare_section_ids_values(self):
         for section in self.section_ids:
