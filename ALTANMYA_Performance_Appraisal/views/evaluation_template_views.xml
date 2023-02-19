@@ -7,14 +7,14 @@
                 <form string="Evaluation Template">
                     <header groups="ALTANMYA_Performance_Appraisal.evaluation_group_creators">
                         <button name="button_mark_as_done" type="object"
-                            string="Mark as done" class="btn btn-primary"
-                            attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                                string="Mark as done" class="btn btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
                         <button name="button_inform_hr" type="object"
-                            string="Inform HR" class="btn btn-primary"
-                            attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                                string="Inform HR" class="btn btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
                         <button name="button_reset_to_draft" type="object"
-                            string="Reset To Draft" class="btn btn-primary"
-                            attrs="{'invisible': [('state', '!=', 'inform_hr')]}"/>
+                                string="Reset To Draft" class="btn btn-primary"
+                                attrs="{'invisible': [('state', '!=', 'inform_hr')]}"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -34,10 +34,12 @@
                                 <field name="one_field_required" invisible="1"/>
                                 <field name="employee_id"/>
                                 <field name="management_id"/>
-                                <field name="evaluation_template_id" attrs="{'invisible': [('employee_user_match', '=', True)]}"/>
+                                <field name="evaluation_template_id"
+                                       attrs="{'invisible': [('employee_user_match', '=', True)]}"/>
                                 <field name="evaluation_type"/>
                             </group>
                             <group>
+                                <field name="responsible_users_ids" invisible="1"/>
                                 <field name="department_id"/>
                                 <field name="job_title"/>
                                 <field name="evaluation_period"/>
@@ -53,15 +55,23 @@
                                        mode="tree">
                                     <tree string="Evaluation Sections" create="0" delete="0">
                                         <field name="section_type_id"/>
-                                        <field name="state" widget="badge" decoration-warning="state == 'in_progress'" decoration-success="state == 'done'" attrs="{'column_invisible': [('parent.is_user_creator', '=', False), ('parent.appraiser_user_match', '=', False)]}"/>
-                                        <button name="button_done" type="object" string="Done" class="btn-success" attrs="{'invisible': ['|', '|', ('parent.state', '!=', 'in_progress'), ('state', '=', 'done'), '&amp;', ('parent.is_user_creator', '=', False), ('parent.appraiser_user_match', '=', False)]}"/>
-                                        <button name="button_draft" type="object" string="Reset To Draft" class="btn-success" attrs="{'invisible': ['|', '|', ('parent.state', '!=', 'in_progress'), ('state', '=', 'in_progress'), '&amp;', ('parent.is_user_creator', '=', False), ('parent.appraiser_user_match', '=', False)]}"/>
+                                        <field name="responsible_users_ids" invisible="1"/>
+                                        <field name="state" widget="badge" decoration-warning="state == 'in_progress'"
+                                               decoration-success="state == 'done'"
+                                               attrs="{'column_invisible': [('parent.is_user_creator', '=', False), ('parent.appraiser_user_match', '=', False)]}"/>
+                                        <button name="button_done" type="object" string="Done" class="btn-success"
+                                                attrs="{'invisible': &quot;['|', '|', ('parent.state', '!=', 'in_progress'), ('state', '=', 'done'), '&amp;', ('parent.is_user_creator', '=', False), ('responsible_users_ids', 'not in', [uid])]&quot;}"/>
+                                        <button name="button_draft" type="object" string="Reset To Draft"
+                                                class="btn-success"
+                                                attrs="{'invisible': &quot;['|', '|', ('parent.state', '!=', 'in_progress'), ('state', '=', 'in_progress'), '&amp;', ('parent.is_user_creator', '=', False), ('responsible_users_ids', 'not in', [uid])]&quot;}"/>
                                         <field name="weight"/>
-                                        <field name="final_score" attrs="{'column_invisible': [('parent.is_user_creator', '=', False)]}"/>
+                                        <field name="final_score"
+                                               attrs="{'column_invisible': [('parent.is_user_creator', '=', False)]}"/>
                                         <field name="notes"/>
                                     </tree>
                                 </field>
-                                <group name="score_group" attrs="{'invisible': [('is_user_creator', '=', False), ('hr_responsible_user_match', '=', False)]}">
+                                <group name="score_group"
+                                       attrs="{'invisible': [('is_user_creator', '=', False), ('hr_responsible_user_match', '=', False)]}">
                                     <group class="oe_subtotal_footer oe_right" colspan="4">
                                         <field name="overall_score"/>
                                         <field name="overall_rate"/>
@@ -92,18 +102,22 @@
                             <page string="Comments &amp; Signatures"
                                   attrs="{'invisible': [('show_comments_and_signature_page', '=', False)]}">
                                 <group>
-                                    <group string="Suggestions" attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
+                                    <group string="Suggestions"
+                                           attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
                                         <field name="suggestion_improvements"/>
                                     </group>
-                                    <group string="Appraiser" attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
+                                    <group string="Appraiser"
+                                           attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
                                         <field name="appraiser_comments"/>
                                         <field name="appraiser_signature" widget="signature"/>
                                     </group>
-                                    <group string="Concerned Employee" attrs="{'invisible': [('is_user_creator', '=', False), ('employee_user_match', '=', False)]}">
+                                    <group string="Concerned Employee"
+                                           attrs="{'invisible': [('is_user_creator', '=', False), ('employee_user_match', '=', False)]}">
                                         <field name="concerned_employee_comments"/>
                                         <field name="concerned_employee_signature" widget="signature"/>
                                     </group>
-                                    <group string="Recommendations" attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
+                                    <group string="Recommendations"
+                                           attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
                                         <field name="recommendations"/>
                                     </group>
                                 </group>
@@ -111,7 +125,11 @@
                             <page string="Score Notes"
                                   attrs="{'invisible': [('is_user_creator', '=', False), ('appraiser_user_match', '=', False)]}">
                                 <group string="Appraiser Notes in Case of Low or High Score">
-                                    <strong attrs="{'invisible': [('score_note_selection', '!=', 'note_or_document')]}">You have a choice between writing a note or uploading an attachment.</strong><br/><br/>
+                                    <strong attrs="{'invisible': [('score_note_selection', '!=', 'note_or_document')]}">
+                                        You have a choice between writing a note or uploading an attachment.
+                                    </strong>
+                                    <br/>
+                                    <br/>
                                     <field name="score_note_selection" invisible="1"/>
                                     <field name="score_note"
                                            attrs="{'invisible': [('score_note_selection', '=', 'document')], 'required': ['&amp;', ('appraiser_user_match', '=', True), '&amp;', '|', ('overall_rate', '=', 'Weak'), ('overall_rate', '=', 'Excellent'), '|', ('score_note_selection', '=', 'note'), '|', ('score_note_selection', '=', 'both'), '&amp;', ('score_note_selection', '=', 'note_or_document'), ('one_field_required', '=', True)]}"/>
@@ -144,7 +162,8 @@
                     <field name="job_title"/>
                     <field name="management_id"/>
                     <field name="evaluation_period"/>
-                    <field name="state" decoration-muted="state == 'in_progress'" decoration-info="state == 'done'" decoration-success="state == 'inform_hr'" widget="badge"/>
+                    <field name="state" decoration-muted="state == 'in_progress'" decoration-info="state == 'done'"
+                           decoration-success="state == 'inform_hr'" widget="badge"/>
                 </tree>
             </field>
         </record>

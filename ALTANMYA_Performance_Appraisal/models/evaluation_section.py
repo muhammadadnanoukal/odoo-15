@@ -14,6 +14,7 @@ class EvaluationSection(models.Model):
     evaluation_template_id = fields.Many2one('evaluation.template', store=True)
     section_line_ids = fields.One2many('evaluation.section.line', 'section_id', store=True)
     section_responsible_user_id = fields.Many2one('res.users', store=True)
+    responsible_users_ids = fields.Many2many(related='evaluation_template_id.responsible_users_ids')
 
     is_user_creator = fields.Boolean(compute='_compute_is_user_creator', default=False)
 
